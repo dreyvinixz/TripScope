@@ -4,6 +4,7 @@ import { useDestination } from './hooks/useDestination'
 import { Loading } from './components/Loading/Loading'
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage'
 import { Dashboard } from './components/Dashboard'
+import { DestinationHeader } from './components/DestinationHeader/DestinationHeader'
 import { favoritesSchema, historySchema, readStored, themeSchema, writeStored } from './utils/storage'
 import type { Location } from './types/location'
 import { normalizeCityInput } from './utils/validation'
@@ -64,14 +65,12 @@ export function App() {
         <p className="muted">Encontramos lugares com nomes parecidos. Escolha o seu.</p>
         <ul>{matches.map(location => <li key={location.id}><button onClick={() => { void select(location) }}><strong>{location.city}</strong><span>{[location.region, location.country].filter(Boolean).join(' · ')}</span><span aria-hidden="true">↗</span></button></li>)}</ul></section>}
       {notice && <p role="status" className="notice no-print">{notice}</p>}
-      {destination ? <section className="destination" aria-label="Dashboard do destino" key={destination.location.id}>
-        <div className="destination-heading no-print"><div><p className="eyebrow">SEU DESTINO, EM PERSPECTIVA</p>
-          <h2>{destination.country.status === 'success' && destination.country.data.flagUrl && <img className="flag" src={destination.country.data.flagUrl} alt={`Bandeira de ${destination.location.country}`} width={36} height={24} />} {destination.location.city}</h2>
-          <p className="muted">{destination.location.country} · {destination.location.region} · {destination.location.latitude.toFixed(2)}°, {destination.location.longitude.toFixed(2)}°</p></div>
-          <div className="destination-actions"><button className="button secondary" aria-pressed={favorites.some(item => item.id === destination.location.id)}
-            onClick={() => toggleFavorite(destination.location)}>★ Favoritar</button><button className="button secondary" onClick={() => { void share() }}>Compartilhar</button>
-            <button className="button secondary" onClick={() => setUnit(unit === 'C' ? 'F' : 'C')} aria-label={`Alterar temperatura para °${unit === 'C' ? 'F' : 'C'}`}>°{unit} ⇄</button>
-            <button className="button secondary" onClick={() => { void select(destination.location) }}>Atualizar dados</button></div></div>
+      {destination ? <section className="destination" aria-label="Dashboard do destino" aria-labelledby="destination-title" key={destination.location.id}>
+        <DestinationHeader location={destination.location} country={destination.country}
+          isFavorite={favorites.some(item => item.id === destination.location.id)}
+          unit={unit}
+          onToggleFavorite={() => toggleFavorite(destination.location)} onShare={() => { void share() }}
+          onToggleUnit={() => setUnit(unit === 'C' ? 'F' : 'C')} onRefresh={() => { void select(destination.location) }} />
         <Dashboard destination={destination} unit={unit} />
       </section> : !loading && !error && matches.length === 0 && <section className="home-features no-print" aria-label="Como funciona">
         <article><span>01 / DESCUBRA</span><h2>O mundo, mais perto.</h2><p>Encontre uma cidade e conheça o destino antes de fazer as malas.</p></article>

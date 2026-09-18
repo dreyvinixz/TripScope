@@ -74,21 +74,21 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** executar o pipeline principal da busca e exibir destino, clima e previsão.
 
-- [ ] Implementar estado do fluxo no `useDestination`.
-- [ ] Validar e normalizar a entrada da busca.
-- [ ] Executar geocodificação antes das chamadas dependentes.
-- [ ] Consultar clima e país em paralelo após resolver a localização.
-- [ ] Consultar câmbio somente quando existir moeda compatível.
-- [ ] Definir regra de cancelamento para buscas consecutivas.
-- [ ] Evitar atualização de estado por resposta obsoleta.
-- [ ] Implementar `WeatherCard`, `ForecastCard` e cabeçalho do destino.
-- [ ] Exibir coordenadas, país e bandeira com texto alternativo.
-- [ ] Implementar estado inicial, skeleton de carregamento, resultado e erro de cidade inexistente.
-- [ ] Aplicar degradação graciosa quando um serviço secundário falhar.
-- [ ] Testar a orquestração e a precedência dos estados.
-- [ ] E2E com APIs interceptadas: pesquisar Tokyo e validar destino, clima e cinco cards.
-- [ ] E2E: buscar `asdfghxyz123` e exibir “Não encontramos esse destino”.
-- [ ] E2E: iniciar Tokyo e imediatamente Paris; somente Paris pode permanecer na tela.
+- [x] Implementar estado do fluxo no `useDestination`.
+- [x] Validar e normalizar a entrada da busca.
+- [x] Executar geocodificação antes das chamadas dependentes.
+- [x] Consultar clima e país em paralelo após resolver a localização.
+- [x] Consultar câmbio somente quando existir moeda compatível.
+- [x] Definir regra de cancelamento para buscas consecutivas.
+- [x] Evitar atualização de estado por resposta obsoleta.
+- [x] Implementar `WeatherCard`, `ForecastCard` e cabeçalho do destino.
+- [x] Exibir coordenadas, país e bandeira com texto alternativo.
+- [x] Implementar estado inicial, skeleton de carregamento, resultado e erro de cidade inexistente.
+- [x] Aplicar degradação graciosa quando um serviço secundário falhar.
+- [x] Testar a orquestração e a precedência dos estados.
+- [x] E2E com APIs interceptadas: pesquisar Tokyo e validar destino, clima e cinco cards.
+- [x] E2E: buscar `asdfghxyz123` e exibir “Não encontramos esse destino”.
+- [x] E2E: iniciar Tokyo e imediatamente Paris; somente Paris pode permanecer na tela.
 
 **Critério de aceite:** a pesquisa produz dados normalizados no dashboard e falhas secundárias não derrubam toda a página.
 
