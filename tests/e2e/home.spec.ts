@@ -8,6 +8,14 @@ const paris = {
   id: 2988507, name: 'Paris', latitude: 48.8566, longitude: 2.3522,
   country_code: 'FR', timezone: 'Europe/Paris', country: 'France', admin1: 'Île-de-France',
 }
+const unsupported = {
+  id: 9900001, name: 'Unsupported', latitude: 10, longitude: 20,
+  country_code: 'XX', timezone: 'Etc/UTC', country: 'Exampleland', admin1: 'Example Region',
+}
+const nowhere = {
+  id: 9900002, name: 'Nowhere', latitude: -10, longitude: -20,
+  country_code: 'EX', timezone: 'Etc/UTC', country: 'Exampleland', admin1: '',
+}
 
 function weatherPayload() {
   return {
@@ -26,6 +34,15 @@ function weatherPayload() {
 }
 
 function countryPayload(countryCode: string) {
+  if (countryCode === 'XX') return [{
+    name: { common: 'Exampleland', official: 'Exampleland' }, cca2: 'XX',
+    flags: { svg: 'https://flagcdn.com/xx.svg' }, capital: ['Example City'], population: 1000,
+    languages: { exm: 'Examplean' }, timezones: ['UTC'],
+    currencies: { XXX: { name: 'Example coin', symbol: '¤' } },
+  }]
+  if (countryCode === 'EX') return [{
+    name: { common: 'Exampleland', official: 'Exampleland' }, cca2: 'EX', population: 1000,
+  }]
   const isJapan = countryCode === 'JP'
   return [{
     name: { common: isJapan ? 'Japan' : 'France', official: isJapan ? 'Japan' : 'French Republic' },
@@ -46,7 +63,8 @@ async function mockServices(page: Page, delayTokyo = false) {
   await page.route('**/geocoding-api.open-meteo.com/**', async (route) => {
     const name = new URL(route.request().url()).searchParams.get('name')
     if (delayTokyo && name === 'Tokyo') await new Promise(resolve => setTimeout(resolve, 300))
-    await fulfillJson(route, { results: name === 'Tokyo' ? [tokyo] : name === 'Paris' ? [paris] : [] })
+    const results = name === 'Tokyo' ? [tokyo] : name === 'Paris' ? [paris] : name === 'Unsupported' ? [unsupported] : name === 'Nowhere' ? [nowhere] : []
+    await fulfillJson(route, { results })
   })
   await page.route('**/api.open-meteo.com/v1/forecast**', route => fulfillJson(route, weatherPayload()))
   await page.route('**/restcountries.com/v3.1/alpha/**', async (route) => {
@@ -109,4 +127,49 @@ test('mantém somente Paris quando uma nova busca começa antes de Tokyo termina
 
   await expect(page.getByRole('heading', { name: 'Paris', exact: true })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Tokyo', exact: true })).not.toBeVisible()
+})
+
+test('converte R$ 1.000 para JPY sem consultar novamente ao editar o valor', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/')
+
+  const destination = page.getByRole('searchbox', { name: 'Para onde você quer viajar?' })
+  await destination.fill('Tokyo')
+  await destination.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Tokyo', exact: true })).toBeVisible()
+
+  const amount = page.getByLabel('Quanto você quer levar? (BRL)')
+  await amount.fill('1000')
+  await expect(page.locator('output.converted')).toContainText('29.420')
+  await expect(page.locator('output.converted')).toContainText('JPY')
+})
+
+test('mantém país e clima quando Frankfurter não suporta a moeda', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/')
+
+  const destination = page.getByRole('searchbox', { name: 'Para onde você quer viajar?' })
+  await destination.fill('Unsupported')
+  await destination.press('Enter')
+
+  await expect(page.getByRole('heading', { name: 'Unsupported', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Sobre o país' })).toContainText('Exampleland')
+  await expect(page.getByRole('region', { name: 'Clima atual' })).toContainText('25°C')
+  await expect(page.getByRole('region', { name: 'Seu dinheiro por lá' }).getByRole('alert')).toContainText('Moeda não suportada')
+})
+
+test('exibe fallbacks do país quando capital, idioma e moeda estão ausentes', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/')
+
+  const destination = page.getByRole('searchbox', { name: 'Para onde você quer viajar?' })
+  await destination.fill('Nowhere')
+  await destination.press('Enter')
+
+  await expect(page.getByRole('heading', { name: 'Nowhere', exact: true })).toBeVisible()
+  const country = page.getByRole('region', { name: 'Sobre o país' })
+  await expect(country).toContainText('Não informada')
+  await expect(country).toContainText('Não informados')
+  await expect(page.getByRole('region', { name: 'Clima atual' })).toContainText('25°C')
+  await expect(page.getByRole('region', { name: 'Seu dinheiro por lá' }).getByRole('alert')).toContainText('não informa uma moeda compatível')
 })
