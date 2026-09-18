@@ -2,7 +2,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
@@ -18,6 +18,8 @@
     "vitest.config.ts",
     "playwright.config.ts",
     "api",
-    "tests/e2e"
+    "tests/e2e",
+    "tests/contract",
+    "server"
   ]
 }

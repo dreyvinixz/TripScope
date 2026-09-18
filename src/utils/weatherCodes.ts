@@ -5,5 +5,17 @@ const conditions: [number[], string, string][] = [
   [[71, 73, 75, 77], 'Neve', '❄'], [[80, 81, 82], 'Pancadas de chuva', '🌧'],
   [[85, 86], 'Pancadas de neve', '❄'], [[95, 96, 99], 'Trovoada', '⛈'],
 ]
-export function getWeatherDescription(code: number): string { return conditions.find(([codes]) => codes.includes(code))?.[1] ?? 'Condição não identificada' }
-export function getWeatherIcon(code: number): string { return conditions.find(([codes]) => codes.includes(code))?.[2] ?? '◇' }
+export interface WeatherCondition {
+  description: string
+  icon: string
+  iconLabel: string
+}
+
+export function getWeatherCondition(code: number): WeatherCondition {
+  const condition = conditions.find(([codes]) => codes.includes(code))
+  if (!condition) return { description: 'Condição não identificada', icon: '◇', iconLabel: 'Condição meteorológica não identificada' }
+  return { description: condition[1], icon: condition[2], iconLabel: `Ícone de ${condition[1].toLocaleLowerCase('pt-BR')}` }
+}
+
+export function getWeatherDescription(code: number): string { return getWeatherCondition(code).description }
+export function getWeatherIcon(code: number): string { return getWeatherCondition(code).icon }

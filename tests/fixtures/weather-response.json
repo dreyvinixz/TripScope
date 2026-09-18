@@ -1,0 +1,17 @@
+{
+  "current": {
+    "time": "2026-09-18T14:00",
+    "temperature_2m": 24.5,
+    "apparent_temperature": 25.1,
+    "relative_humidity_2m": 68,
+    "wind_speed_10m": 12.4,
+    "weather_code": 2
+  },
+  "daily": {
+    "time": ["2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22"],
+    "temperature_2m_min": [19.1, 18.4, 20.0, 21.3, 19.8],
+    "temperature_2m_max": [26.4, 25.7, 27.2, 28.0, 24.9],
+    "precipitation_probability_max": [10, 35, null, 80, 45],
+    "weather_code": [2, 61, 3, 80, 95]
+  }
+}

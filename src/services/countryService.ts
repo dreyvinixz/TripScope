@@ -4,7 +4,7 @@ import { parseResponse, requestJson, ServiceError } from './httpClient'
 export const COUNTRIES_API_URL = 'https://restcountries.com/v3.1'
 const countryDto = z.object({ name: z.object({ official: z.string().min(1), common: z.string().min(1) }),
   cca2: z.string().regex(/^[A-Z]{2}$/), flags: z.object({ svg: z.string().optional(), png: z.string().optional() }).optional(),
-  capital: z.array(z.string()).optional(), population: z.number().nonnegative(),
+  capital: z.array(z.string()).optional(), population: z.number().finite().nonnegative(),
   languages: z.record(z.string(), z.string()).optional(), timezones: z.array(z.string()).optional(),
   currencies: z.record(z.string(), z.object({ name: z.string(), symbol: z.string().optional() })).optional(),
 })
@@ -19,8 +19,9 @@ export function normalizeCountry(data: unknown): Country {
     currency: currencies[0] ?? null, currencies, timezones: item.timezones ?? [] }
 }
 export async function getCountry(code: string, signal?: AbortSignal): Promise<Country> {
-  if (!/^[A-Z]{2}$/.test(code)) throw new ServiceError('unexpected-response')
-  const country = normalizeCountry(await requestJson(`${COUNTRIES_API_URL}/alpha/${code}?fields=name,cca2,flags,capital,population,languages,currencies,timezones`, { signal }))
-  if (country.countryCode !== code) throw new ServiceError('unexpected-response')
+  const normalizedCode = code.trim().toUpperCase()
+  if (!/^[A-Z]{2}$/.test(normalizedCode)) throw new ServiceError('not-found')
+  const country = normalizeCountry(await requestJson(`${COUNTRIES_API_URL}/alpha/${normalizedCode}?fields=name,cca2,flags,capital,population,languages,currencies,timezones`, { signal }))
+  if (country.countryCode !== normalizedCode) throw new ServiceError('unexpected-response')
   return country
 }

@@ -1,11 +1,12 @@
 import type { WeatherReport } from '../../types/weather'
 import { temperature } from '../../utils/formatters'
-import { getWeatherDescription, getWeatherIcon } from '../../utils/weatherCodes'
+import { getWeatherCondition } from '../../utils/weatherCodes'
 export function WeatherCard({ weather, unit }: { weather: WeatherReport; unit: 'C' | 'F' }) {
   const current = weather.current
+  const condition = getWeatherCondition(current.weatherCode)
   return <>
-    <div className="weather-main"><strong>{temperature(current.temperatureCelsius, unit)}</strong><span aria-hidden="true">{getWeatherIcon(current.weatherCode)}</span></div>
-    <p>{getWeatherDescription(current.weatherCode)}</p>
+    <div className="weather-main"><strong>{temperature(current.temperatureCelsius, unit)}</strong><span role="img" aria-label={condition.iconLabel}>{condition.icon}</span></div>
+    <p>{condition.description}</p>
     <dl className="weather-details">
       <div><dt>Sensação</dt><dd>{temperature(current.apparentTemperatureCelsius, unit)}</dd></div>
       <div><dt>Umidade</dt><dd>{current.relativeHumidityPercent}%</dd></div>

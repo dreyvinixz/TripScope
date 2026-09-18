@@ -3,9 +3,9 @@ import type { Location } from '../types/location'
 import type { WeatherReport } from '../types/weather'
 import { parseResponse, requestJson, ServiceError } from './httpClient'
 export const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast'
-const numbers = z.array(z.number()).length(5)
+const numbers = z.array(z.number().finite()).length(5)
 const weatherDto = z.object({
-  current: z.object({ temperature_2m: z.number(), apparent_temperature: z.number(),
+  current: z.object({ temperature_2m: z.number().finite(), apparent_temperature: z.number().finite(),
     relative_humidity_2m: z.number().min(0).max(100), wind_speed_10m: z.number().nonnegative(),
     weather_code: z.number().int(), time: z.string().min(10) }),
   daily: z.object({ time: z.array(z.iso.date()).length(5), temperature_2m_min: numbers,
@@ -14,7 +14,9 @@ const weatherDto = z.object({
 })
 export function normalizeWeather(data: unknown): WeatherReport {
   const { current, daily } = parseResponse(weatherDto, data)
-  if (new Set(daily.time).size !== 5) throw new ServiceError('unexpected-response')
+  if (new Set(daily.time).size !== 5 || daily.time.some((date, index) => daily.time.indexOf(date) !== index)) {
+    throw new ServiceError('unexpected-response')
+  }
   return {
     observedAt: current.time,
     current: { temperatureCelsius: current.temperature_2m, apparentTemperatureCelsius: current.apparent_temperature,

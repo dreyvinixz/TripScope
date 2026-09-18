@@ -5,13 +5,13 @@ import { parseResponse, requestJson, ServiceError } from './httpClient'
 export const GEOCODING_API_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const locationDto = z.object({
   id: z.number().int(), name: z.string().min(1), country: z.string().min(1),
-  country_code: z.string().regex(/^[A-Z]{2}$/), latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180), timezone: z.string().min(1), admin1: z.string().optional(),
+  country_code: z.string().regex(/^[A-Za-z]{2}$/), latitude: z.number().finite().min(-90).max(90),
+  longitude: z.number().finite().min(-180).max(180), timezone: z.string().min(1), admin1: z.string().optional(),
 })
 export function normalizeLocations(data: unknown): Location[] {
   const { results } = parseResponse(z.object({ results: z.array(locationDto).optional() }), data)
   return (results ?? []).map(item => ({ id: item.id, city: item.name, country: item.country,
-    countryCode: item.country_code, latitude: item.latitude, longitude: item.longitude,
+    countryCode: item.country_code.toUpperCase(), latitude: item.latitude, longitude: item.longitude,
     timezone: item.timezone, region: item.admin1 ?? '' }))
 }
 export async function searchLocations(city: string, signal?: AbortSignal): Promise<Location[]> {

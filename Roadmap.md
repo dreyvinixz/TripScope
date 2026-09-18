@@ -55,18 +55,18 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** transformar respostas externas em modelos internos confiáveis.
 
-- [ ] Definir os DTOs privados das respostas de Open-Meteo, REST Countries e Frankfurter.
-- [ ] Implementar validação em runtime das propriedades realmente utilizadas.
-- [ ] Implementar `geocodingService` com normalização de cidade, país, ISO, coordenadas e timezone.
-- [ ] Implementar `weatherService` com clima atual e exatamente cinco dias de previsão.
-- [ ] Mapear códigos meteorológicos para descrição e ícone acessível.
-- [ ] Implementar `countryService` por código ISO, incluindo ausência de capital, idioma ou moeda.
-- [ ] Implementar `currencyService` para cotação BRL → moeda do destino.
-- [ ] Definir erros de domínio: não encontrado, timeout, rede, indisponibilidade, resposta inesperada e moeda sem suporte.
-- [ ] Garantir que componentes nunca recebam JSON bruto das APIs.
-- [ ] Criar fixtures mínimas e sanitizadas para cada Web Service.
-- [ ] Testar normalizadores, timeout, HTTP não-2xx e payload malformado.
-- [ ] Adicionar testes de contrato opcionais contra os endpoints públicos, separados dos testes determinísticos.
+- [x] Definir os DTOs privados das respostas de Open-Meteo, REST Countries e Frankfurter.
+- [x] Implementar validação em runtime das propriedades realmente utilizadas.
+- [x] Implementar `geocodingService` com normalização de cidade, país, ISO, coordenadas e timezone.
+- [x] Implementar `weatherService` com clima atual e exatamente cinco dias de previsão.
+- [x] Mapear códigos meteorológicos para descrição e ícone acessível.
+- [x] Implementar `countryService` por código ISO, incluindo ausência de capital, idioma ou moeda.
+- [x] Implementar `currencyService` para cotação BRL → moeda do destino.
+- [x] Definir erros de domínio: não encontrado, timeout, rede, indisponibilidade, resposta inesperada e moeda sem suporte.
+- [x] Garantir que componentes nunca recebam JSON bruto das APIs.
+- [x] Criar fixtures mínimas e sanitizadas para cada Web Service.
+- [x] Testar normalizadores, timeout, HTTP não-2xx e payload malformado.
+- [x] Adicionar testes de contrato opcionais contra os endpoints públicos, separados dos testes determinísticos.
 
 **Critério de aceite:** cada serviço retorna somente seu modelo interno ou um erro conhecido, com testes cobrindo sucesso e falhas.
 
