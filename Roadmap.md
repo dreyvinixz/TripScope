@@ -96,17 +96,17 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** completar a composição de dados factuais do dashboard.
 
-- [ ] Implementar `CountryCard` com capital, população, idioma, moeda e timezone.
-- [ ] Formatar números, moedas e datas com `Intl`.
-- [ ] Implementar `CurrencyConverter` com entrada em BRL e resultado na moeda local.
-- [ ] Validar valor vazio, zero, negativo, muito grande e separadores decimais.
-- [ ] Definir comportamento para países com múltiplas moedas.
-- [ ] Exibir estado específico para moeda ausente ou não suportada pelo Frankfurter.
-- [ ] Não consultar novamente a cotação a cada tecla quando uma multiplicação local for suficiente.
-- [ ] Testar cálculos e arredondamento sem comparar strings frágeis de locale.
-- [ ] E2E: converter R$ 1.000 para JPY em Tokyo usando cotação mockada.
-- [ ] E2E: simular moeda não suportada e manter país/clima utilizáveis.
-- [ ] E2E: validar CountryCard para cidade cujo país possui campos opcionais ausentes.
+- [x] Implementar `CountryCard` com capital, população, idioma, moeda e timezone.
+- [x] Formatar números, moedas e datas com `Intl`.
+- [x] Implementar `CurrencyConverter` com entrada em BRL e resultado na moeda local.
+- [x] Validar valor vazio, zero, negativo, muito grande e separadores decimais.
+- [x] Definir comportamento para países com múltiplas moedas.
+- [x] Exibir estado específico para moeda ausente ou não suportada pelo Frankfurter.
+- [x] Não consultar novamente a cotação a cada tecla quando uma multiplicação local for suficiente.
+- [x] Testar cálculos e arredondamento sem comparar strings frágeis de locale.
+- [x] E2E: converter R$ 1.000 para JPY em Tokyo usando cotação mockada.
+- [x] E2E: simular moeda não suportada e manter país/clima utilizáveis.
+- [x] E2E: validar CountryCard para cidade cujo país possui campos opcionais ausentes.
 
 **Critério de aceite:** dados do país e conversão aparecem sem JSON bruto e sem comprometer o restante do dashboard em caso de falha.
 
@@ -114,19 +114,19 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** tornar o dashboard claro, profissional e utilizável em qualquer viewport prevista.
 
-- [ ] Definir layout final para desktop, tablet e smartphone.
-- [ ] Refinar skeletons sem provocar mudança brusca de layout.
-- [ ] Implementar feedback de foco, hover, disabled e carregamento.
-- [ ] Garantir ordem lógica de títulos e landmarks.
-- [ ] Associar todos os labels, descrições de erro e campos.
-- [ ] Usar regiões `status`/`alert` sem anúncios duplicados.
-- [ ] Garantir contraste e alvos de toque adequados.
-- [ ] Evitar dependência exclusiva de cor ou ícone para transmitir informação.
-- [ ] Testar zoom e conteúdo longo, inclusive nomes extensos de cidades e moedas.
-- [ ] E2E: realizar busca completa somente com teclado.
-- [ ] E2E: validar ausência de overflow horizontal em Pixel 7, tablet e desktop.
-- [ ] E2E: executar verificação automatizada de acessibilidade nas telas principais.
-- [ ] E2E: falhar o teste caso surjam `console.error`, exceções de página ou requests inesperadamente abortados.
+- [x] Definir layout final para desktop, tablet e smartphone.
+- [x] Refinar skeletons sem provocar mudança brusca de layout.
+- [x] Implementar feedback de foco, hover, disabled e carregamento.
+- [x] Garantir ordem lógica de títulos e landmarks.
+- [x] Associar todos os labels, descrições de erro e campos.
+- [x] Usar regiões `status`/`alert` sem anúncios duplicados.
+- [x] Garantir contraste e alvos de toque adequados.
+- [x] Evitar dependência exclusiva de cor ou ícone para transmitir informação.
+- [x] Testar zoom e conteúdo longo, inclusive nomes extensos de cidades e moedas.
+- [x] E2E: realizar busca completa somente com teclado.
+- [x] E2E: validar ausência de overflow horizontal em Pixel 7, tablet e desktop.
+- [x] E2E: executar verificação automatizada de acessibilidade nas telas principais.
+- [x] E2E: falhar o teste caso surjam `console.error`, exceções de página ou requests inesperadamente abortados.
 
 **Critério de aceite:** fluxos principais funcionam por teclado e passam nas verificações visual, responsiva e automatizada de acessibilidade.
 
@@ -159,16 +159,16 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** implementar melhorias opcionais somente depois do núcleo estável.
 
-- [ ] Criar histórico limitado de pesquisas em `localStorage`.
-- [ ] Criar favoritos em `localStorage`.
-- [ ] Implementar dark/light mode respeitando preferência do sistema.
-- [ ] Implementar alternância °C/°F sem refazer chamadas desnecessárias.
-- [ ] Implementar compartilhamento com Web Share API e fallback de copiar link.
-- [ ] Criar versão de impressão/exportação do roteiro.
-- [ ] Tratar storage indisponível ou corrompido sem quebrar a aplicação.
-- [ ] E2E: histórico e favoritos persistem após reload.
-- [ ] E2E: alternância de temperatura mantém consistência dos valores.
-- [ ] E2E: impressão oculta controles e preserva o roteiro.
+- [x] Criar histórico limitado de pesquisas em `localStorage`.
+- [x] Criar favoritos em `localStorage`.
+- [x] Implementar dark/light mode respeitando preferência do sistema.
+- [x] Implementar alternância °C/°F sem refazer chamadas desnecessárias.
+- [x] Implementar compartilhamento com Web Share API e fallback de copiar link.
+- [x] Criar versão de impressão/exportação do roteiro.
+- [x] Tratar storage indisponível ou corrompido sem quebrar a aplicação.
+- [x] E2E: histórico e favoritos persistem após reload.
+- [x] E2E: alternância de temperatura mantém consistência dos valores.
+- [x] E2E: impressão oculta controles e preserva o roteiro.
 
 **Critério de aceite:** cada extra é independente, acessível e removível sem afetar o núcleo. Itens que ameaçarem prazo ou simplicidade permanecem fora da entrega.
 
@@ -176,21 +176,21 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** provar os requisitos com cenários determinísticos e uma checagem online controlada.
 
-- [ ] Organizar Page Objects ou helpers somente onde reduzirem duplicação real.
-- [ ] Centralizar fixtures e interceptações de Open-Meteo, REST Countries, Frankfurter e Gemini.
-- [ ] Cobrir as cidades Tokyo, London, New York, Paris, Rio Grande e São Paulo.
-- [ ] Cobrir cidade inexistente, timeout, rede offline, HTTP 5xx e resposta malformada de cada API.
-- [ ] Cobrir falha parcial de país, câmbio e IA sem perda dos dados já disponíveis.
-- [ ] Cobrir moeda não suportada e país sem dados opcionais.
-- [ ] Cobrir conversão monetária e validações de formulário.
-- [ ] Cobrir roteiro e pergunta contextual ao Gemini.
-- [ ] Cobrir navegação por teclado e acessibilidade básica.
-- [ ] Executar matriz Chromium desktop e Chromium mobile em toda mudança relevante.
-- [ ] Adicionar um smoke E2E opcional para a URL pública via `E2E_BASE_URL`.
-- [ ] Registrar trace, screenshot e vídeo apenas em falha/retry.
-- [ ] Adicionar pipeline de CI: instalação limpa, lint, tipos, testes, build e E2E.
-- [ ] Medir cobertura unitária e preencher lacunas de regras críticas.
-- [ ] Revisar flakiness: nenhum `waitForTimeout`; esperas devem observar estado da interface ou resposta conhecida.
+- [x] Organizar Page Objects ou helpers somente onde reduzirem duplicação real.
+- [x] Centralizar fixtures e interceptações de Open-Meteo, REST Countries, Frankfurter e Gemini.
+- [x] Cobrir as cidades Tokyo, London, New York, Paris, Rio Grande e São Paulo.
+- [x] Cobrir cidade inexistente, timeout, rede offline, HTTP 5xx e resposta malformada de cada API.
+- [x] Cobrir falha parcial de país, câmbio e IA sem perda dos dados já disponíveis.
+- [x] Cobrir moeda não suportada e país sem dados opcionais.
+- [x] Cobrir conversão monetária e validações de formulário.
+- [x] Cobrir roteiro e pergunta contextual ao Gemini.
+- [x] Cobrir navegação por teclado e acessibilidade básica.
+- [x] Executar matriz Chromium desktop e Chromium mobile em toda mudança relevante.
+- [x] Adicionar um smoke E2E opcional para a URL pública via `E2E_BASE_URL`.
+- [x] Registrar trace, screenshot e vídeo apenas em falha/retry.
+- [x] Adicionar pipeline de CI: instalação limpa, lint, tipos, testes, build e E2E.
+- [x] Medir cobertura unitária e preencher lacunas de regras críticas.
+- [x] Revisar flakiness: nenhum `waitForTimeout`; esperas devem observar estado da interface ou resposta conhecida.
 
 **Critério de aceite:** a matriz abaixo passa localmente/CI, os testes são repetíveis e nenhuma falha é ocultada por retries.
 

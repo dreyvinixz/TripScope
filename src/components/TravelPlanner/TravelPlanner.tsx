@@ -57,9 +57,9 @@ export function TravelPlanner({ destination }: { destination: Destination }) {
         <label htmlFor="plan-destination">Destino</label><input id="plan-destination" readOnly value={destination.location.city} />
         <div className="form-row">
           <div><label htmlFor="trip-days">Quantidade de dias</label><input id="trip-days" type="number" min={1} max={14}
-            value={days} onChange={event => setDays(event.target.value)} aria-describedby="plan-hint" aria-invalid={!isValidTripDuration(Number(days))} /></div>
+            value={days} onChange={event => setDays(event.target.value)} aria-describedby={planError ? 'plan-hint plan-error' : 'plan-hint'} aria-invalid={!isValidTripDuration(Number(days))} /></div>
           <div><label htmlFor="trip-budget">Orçamento total (R$)</label><input id="trip-budget" inputMode="decimal"
-            value={budget} onChange={event => setBudget(event.target.value)} aria-describedby="plan-hint" aria-invalid={amount === null || amount <= 0} /></div>
+            value={budget} onChange={event => setBudget(event.target.value)} aria-describedby={planError ? 'plan-hint plan-error' : 'plan-hint'} aria-invalid={amount === null || amount <= 0} /></div>
         </div>
         <fieldset><legend>O que te inspira?</legend><div className="interest-list">{interests.map(interest =>
           <label className={`interest ${selected.includes(interest) ? 'selected' : ''}`} key={interest}>
@@ -71,18 +71,18 @@ export function TravelPlanner({ destination }: { destination: Destination }) {
         <p className="source">Ao enviar, destino, orçamento, interesses e dados do painel serão processados pelo Google Gemini. Evite informações pessoais.</p>
         <button className="button primary full-width" disabled={planning || busyData} type="submit">{planning ? 'Gerando roteiro…' : 'Gerar roteiro com IA'}</button>
         {planning && <p role="status">Preparando sugestões para sua viagem…</p>}
-        {planError && <ErrorMessage message={planError} />}
+        {planError && <ErrorMessage id="plan-error" message={planError} />}
       </form>
       <section className="panel ask-panel" aria-label="Pergunte sobre o destino">
         <div className="assistant-symbol" aria-hidden="true">✧</div><h3>Pergunte sobre {destination.location.city}</h3>
         <p className="muted">Uma ajudinha com a mala, os passeios ou os próximos dias?</p>
         <form onSubmit={event => { void submitQuestion(event) }}>
           <label htmlFor="travel-question">Sua pergunta</label><textarea id="travel-question" required minLength={3} maxLength={1000}
-            value={question} onChange={event => setQuestion(event.target.value)} placeholder="O que devo levar na mala?" rows={4} />
+            value={question} onChange={event => setQuestion(event.target.value)} placeholder="O que devo levar na mala?" rows={4} aria-describedby={questionError ? 'question-error' : undefined} />
           <button className="button secondary full-width" disabled={asking || busyData || question.trim().length < 3} type="submit">{asking ? 'Pensando…' : 'Perguntar à IA'}</button>
         </form>
         {asking && <p role="status">Analisando o contexto do destino…</p>}
-        {questionError && <ErrorMessage message={questionError} />}
+        {questionError && <ErrorMessage id="question-error" message={questionError} />}
         {answer && <div className="answer" role="status">{answer}</div>}
         <p className="source">A IA usa o destino atual e os dados disponíveis. Recomendações precisam de confirmação.</p>
       </section>

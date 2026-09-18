@@ -61,6 +61,15 @@ npm run build
 npm run test:e2e
 ```
 
+`test:e2e` executa a matriz Chromium desktop, tablet e mobile com fixtures determinísticas. Os artefatos de trace, screenshot e vídeo são preservados somente quando um teste falha. Para validar uma implantação pública sem iniciar o Vite local:
+
+```bash
+$env:E2E_BASE_URL='https://seu-deploy.example.com'
+npm run test:e2e -- --grep "\[public\]" --project=desktop-chromium
+```
+
+O smoke público é opcional e fica ignorado quando `E2E_BASE_URL` não está definida. A integração contínua executa instalação limpa, lint, tipos, testes unitários, cobertura, build e a matriz E2E. O workflow também pode executar o smoke público quando a variável de repositório `E2E_BASE_URL` estiver configurada.
+
 Os testes unitários usam fixtures e mocks, portanto não dependem da disponibilidade das APIs. Para executar o teste de contrato opcional contra os endpoints públicos:
 
 ```bash

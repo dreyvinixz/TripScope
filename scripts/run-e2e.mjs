@@ -52,7 +52,7 @@ try {
   const exitCode = await run(
     process.execPath,
     ['node_modules/@playwright/test/cli.js', 'test', ...process.argv.slice(2)],
-    { ...process.env, E2E_BASE_URL: suppliedUrl ?? localUrl },
+    { ...process.env, E2E_BASE_URL: suppliedUrl ?? localUrl, E2E_PUBLIC_SMOKE: suppliedUrl ? '1' : '0' },
   )
   process.exitCode = exitCode
 } finally {
