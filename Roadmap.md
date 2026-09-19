@@ -134,19 +134,19 @@ Cada sprint só pode ser encerrada quando:
 
 **Objetivo:** adicionar inteligência generativa sem expor o segredo e sem substituir fontes factuais.
 
-- [ ] Definir contrato discriminado para ações `plan` e `question` na função serverless.
-- [ ] Validar método, content type, tamanho do body e todos os campos recebidos.
-- [ ] Manter `GEMINI_API_KEY` somente em `process.env` no servidor.
-- [ ] Implementar chamada server-side ao Gemini com timeout e tratamento de resposta.
+- [X] Definir contrato discriminado para ações `plan` e `question` na função serverless.
+- [X] Validar método, content type, tamanho do body e todos os campos recebidos.
+- [X] Manter `GEMINI_API_KEY` somente em `process.env` no servidor.
+- [X] Implementar chamada server-side ao Gemini com timeout e tratamento de resposta.
 - [ ] Enviar cidade, país, dias, interesses, orçamento BRL/convertido, previsão, moeda e timezone como contexto.
-- [ ] Criar prompt que trate clima/câmbio/país como contexto fornecido e evite afirmações não verificadas.
-- [ ] Solicitar e validar saída estruturada por dia, manhã, tarde e noite.
+- [X] Criar prompt que trate clima/câmbio/país como contexto fornecido e evite afirmações não verificadas.
+- [X] Solicitar e validar saída estruturada por dia, manhã, tarde e noite.
 - [ ] Implementar formulário do planejador com duração de 1 a 14 dias e interesses selecionáveis.
 - [ ] Implementar “Pergunte sobre {cidade}” reaproveitando o contexto atual.
 - [ ] Separar estados de carregamento e erro da IA dos demais cards.
 - [ ] Sanitizar/renderizar resposta sem injetar HTML arbitrário.
-- [ ] Criar testes unitários do construtor de contexto e da validação do formulário.
-- [ ] Testar a função serverless com Gemini mockado: sucesso, timeout, erro upstream e payload inválido.
+- [X] Criar testes unitários do construtor de contexto e da validação do formulário.
+- [X] Testar a função serverless com Gemini mockado: sucesso, timeout, erro upstream e payload inválido.
 - [ ] E2E: gerar roteiro de dois dias e validar estrutura diária.
 - [ ] E2E: previsão de chuva no terceiro dia resulta em atividade interna na fixture controlada.
 - [ ] E2E: perguntar “O que devo levar na mala?” e validar uso do destino atual.
