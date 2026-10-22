@@ -29,6 +29,47 @@ test('pesquisa Tokyo e exibe destino, clima e cinco previsões', async ({ page }
   expect(browserProblems).toEqual([])
 })
 
+test('abre diretamente a rota /tokyo e renderiza o dashboard do destino', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/tokyo')
+
+  await expect(page).toHaveURL(/\/tokyo$/)
+  await expect(page.locator('#destination-title')).toContainText('Tokyo')
+  await expect(page.getByRole('region', { name: 'Sobre o país' })).toContainText('Japan')
+  await expect(page.getByRole('heading', { name: 'Descubra.' })).toHaveCount(0)
+})
+
+test('ação Explorar Tokyo no Atlas navega para a rota do destino', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Explorar Tokyo' }).click()
+
+  await expect(page).toHaveURL(/\/tokyo$/)
+  await expect(page.locator('#destination-title')).toContainText('Tokyo')
+})
+
+test('voltar no navegador restaura a rota e o destino anterior', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/tokyo')
+  await expect(page.locator('#destination-title')).toContainText('Tokyo')
+
+  await searchCity(page, 'Paris')
+  await expect(page).toHaveURL(/\/paris$/)
+  await page.goBack()
+
+  await expect(page).toHaveURL(/\/tokyo$/)
+  await expect(page.locator('#destination-title')).toContainText('Tokyo')
+})
+
+test('links da interface possuem destinos válidos e o hero usa o WebM preferido', async ({ page }) => {
+  await mockServices(page)
+  await page.goto('/')
+
+  const hrefs = await page.locator('a').evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))
+  expect(hrefs.every(href => Boolean(href?.trim()))).toBe(true)
+  await expect(page.locator('.hero-video source[type="video/webm"]')).toHaveAttribute('src', '/assets/15838744-uhd_3840_1620_24fps.webm')
+})
+
 for (const city of cityCases) {
   test(`normaliza a cidade ${city.query}, país e moeda`, async ({ page }) => {
     await mockServices(page)
@@ -74,7 +115,7 @@ for (const mode of ['offline', 'http-500', 'malformed'] as const) {
 
     await expect(page.getByRole('region', { name: 'Sobre o país' }).getByRole('alert')).toContainText(mode === 'offline' ? 'Verifique sua conexão' : mode === 'http-500' ? 'temporariamente indisponível' : 'dados inesperados')
     await expect(page.getByRole('region', { name: 'Clima atual' })).toContainText('25°C')
-    await expect(page.getByRole('region', { name: 'Seu dinheiro por lá' }).getByRole('alert')).toContainText('Câmbio indisponível')
+    await expect(page.getByRole('region', { name: 'Seu dinheiro por lá' })).toContainText('JPY')
   })
 }
 
@@ -292,7 +333,7 @@ test('compartilha com fallback de copiar link quando Web Share não existe', asy
   await page.getByRole('button', { name: 'Compartilhar' }).click()
 
   await expect(page.locator('p.notice')).toContainText('Link copiado')
-  await expect.poll(() => page.evaluate(() => (window as unknown as { copied?: string }).copied ?? '')).toContain('/?city=Tokyo')
+  await expect.poll(() => page.evaluate(() => (window as unknown as { copied?: string }).copied ?? '')).toContain('/tokyo')
 })
 
 test('imprime o roteiro e oculta controles no modo de impressão', async ({ page }) => {

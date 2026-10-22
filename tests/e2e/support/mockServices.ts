@@ -75,6 +75,10 @@ export function trackBrowserProblems(page: Page): string[] {
   const problems: string[] = []
   page.on('console', message => { if (message.type() === 'error') problems.push(`console: ${message.text()}`) })
   page.on('pageerror', error => problems.push(`page: ${error.message}`))
-  page.on('requestfailed', request => problems.push(`request: ${request.url()} · ${request.failure()?.errorText ?? 'failed'}`))
+  page.on('requestfailed', request => {
+    const failure = request.failure()?.errorText ?? 'failed'
+    const expectedMediaAbort = request.resourceType() === 'media' && failure === 'net::ERR_ABORTED'
+    if (!expectedMediaAbort) problems.push(`request: ${request.url()} · ${failure}`)
+  })
   return problems
 }

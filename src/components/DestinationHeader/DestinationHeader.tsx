@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from '@hugeicons/react'
+import { FavouriteIcon, RefreshIcon, Share01Icon } from '@hugeicons/core-free-icons'
 import type { Resource } from '../../types/destination'
 import type { Country } from '../../types/country'
 import type { Location } from '../../types/location'
@@ -25,10 +27,10 @@ export function DestinationHeader({ location, country, isFavorite, unit, onToggl
       <p className="muted">{location.country} · {location.region} · {location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°</p>
     </div>
     <div className="destination-actions">
-      <button className="button secondary" aria-pressed={isFavorite} onClick={onToggleFavorite}>★ Favoritar</button>
-      <button className="button secondary" onClick={onShare}>Compartilhar</button>
+      <button className="button secondary" aria-pressed={isFavorite} onClick={onToggleFavorite}><HugeiconsIcon icon={FavouriteIcon} size={16} strokeWidth={1.7} aria-hidden="true" /> Favoritar</button>
+      <button className="button secondary" onClick={onShare}><HugeiconsIcon icon={Share01Icon} size={16} strokeWidth={1.7} aria-hidden="true" /> Compartilhar</button>
       <button className="button secondary" onClick={onToggleUnit} aria-label={`Alterar temperatura para °${unit === 'C' ? 'F' : 'C'}`}>°{unit} ⇄</button>
-      <button className="button secondary" onClick={onRefresh}>Atualizar dados</button>
+      <button className="button secondary" onClick={onRefresh}><HugeiconsIcon icon={RefreshIcon} size={16} strokeWidth={1.7} aria-hidden="true" /> Atualizar dados</button>
     </div>
   </div>
 }

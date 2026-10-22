@@ -48,7 +48,7 @@ export function InteractiveGlobe({ onSelectCity }: { onSelectCity: (city: string
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100)
-    camera.position.z = 2.8
+    camera.position.z = 3.6
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setClearColor(0x000000, 0)
     renderer.domElement.dataset.engine = 'three.js'
@@ -57,9 +57,48 @@ export function InteractiveGlobe({ onSelectCity }: { onSelectCity: (city: string
     host.appendChild(renderer.domElement)
 
     const globe = new THREE.Group()
+    const globeMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        baseColor: { value: new THREE.Color(0x9bd8af) },
+        lineColor: { value: new THREE.Color(0xe2f8e7) },
+      },
+      transparent: true,
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 baseColor;
+        uniform vec3 lineColor;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        float line(float value, float width) {
+          float distanceToLine = abs(fract(value) - 0.5);
+          return 1.0 - smoothstep(width, width + 0.018, distanceToLine);
+        }
+        void main() {
+          float latitudeLines = line(vUv.y * 11.0, 0.018);
+          float longitudeLines = line(vUv.x * 20.0, 0.014);
+          vec2 cell = fract(vUv * vec2(20.0, 11.0)) - 0.5;
+          float crossHorizontal = 1.0 - smoothstep(0.015, 0.045, abs(cell.y));
+          float crossVertical = 1.0 - smoothstep(0.015, 0.045, abs(cell.x));
+          float spark = crossHorizontal * crossVertical;
+          float light = max(latitudeLines, longitudeLines) * 0.62 + spark * 0.72;
+          float facing = 0.72 + max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0) * 0.28;
+          vec3 color = mix(baseColor * 0.72, baseColor * 1.16, vUv.y) * facing;
+          color += lineColor * light;
+          gl_FragColor = vec4(color, 0.84);
+        }
+      `,
+    })
     const sphere = new THREE.Mesh(
       new THREE.SphereGeometry(1, 32, 32),
-      new THREE.MeshStandardMaterial({ color: 0x8bb7a1, roughness: 0.82, metalness: 0.05 }),
+      globeMaterial,
     )
     const wire = new THREE.LineSegments(
       new THREE.WireframeGeometry(new THREE.SphereGeometry(1.006, 18, 12)),
@@ -151,7 +190,7 @@ export function InteractiveGlobe({ onSelectCity }: { onSelectCity: (city: string
     }
     const wheel = (event: WheelEvent) => {
       event.preventDefault()
-      camera.position.z = THREE.MathUtils.clamp(camera.position.z + event.deltaY * 0.0015, 2.15, 3.6)
+      camera.position.z = THREE.MathUtils.clamp(camera.position.z + event.deltaY * 0.0015, 2.6, 4.4)
     }
     renderer.domElement.addEventListener('pointerdown', pointerStart)
     renderer.domElement.addEventListener('pointermove', pointerMove)
@@ -176,6 +215,7 @@ export function InteractiveGlobe({ onSelectCity }: { onSelectCity: (city: string
       renderer.domElement.removeEventListener('pointerup', pointerEnd)
       renderer.domElement.removeEventListener('wheel', wheel)
       renderer.dispose()
+      globeMaterial.dispose()
       sphere.geometry.dispose()
       wire.geometry.dispose()
       atmosphere.geometry.dispose()

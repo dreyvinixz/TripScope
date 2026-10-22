@@ -14,7 +14,5 @@ export async function getCurrencyQuote(target: string | undefined, signal?: Abor
   const normalizedTarget = target?.trim().toUpperCase()
   if (!normalizedTarget || !/^[A-Z]{3}$/.test(normalizedTarget)) throw new ServiceError('unsupported-currency')
   if (normalizedTarget === 'BRL') return { baseCurrency: 'BRL', targetCurrency: 'BRL', rate: 1, quotedAt: new Date().toISOString().slice(0, 10) }
-  const currencies = parseResponse(z.record(z.string(), z.string()), await requestJson(`${CURRENCY_API_URL}/currencies`, { signal }))
-  if (!currencies[normalizedTarget]) throw new ServiceError('unsupported-currency')
   return normalizeQuote(await requestJson(`${CURRENCY_API_URL}/latest?base=BRL&symbols=${normalizedTarget}`, { signal }), normalizedTarget)
 }

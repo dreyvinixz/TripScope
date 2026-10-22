@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
 import rawWorldMap from '@svg-maps/world'
 
 const highlighted = new Set(['br', 'fr', 'gb', 'jp', 'us'])
@@ -17,11 +19,12 @@ const worldMap = rawWorldMap as unknown as WorldMapData
 export function WorldMapExplorer({ onSelectCity }: { onSelectCity: (city: string) => void }) {
   const [selectedId, setSelectedId] = useState('jp')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
-  const selected = countryMeta[selectedId]
   const locations = useMemo(() => worldMap.locations, [])
+  const selected = countryMeta[selectedId]
+  const selectedName = selected?.name ?? locations.find(item => item.id === selectedId)?.name ?? 'País não identificado'
   const selectCountry = (location: MapLocation) => setSelectedId(location.id)
 
-  return <section className="world-explorer no-print" aria-label="Mapa mundial interativo">
+  return <section id="atlas-vivo" className="world-explorer no-print" aria-label="Mapa mundial interativo">
     <div className="world-heading">
       <div><p className="eyebrow">ATLAS VIVO</p><h2>Veja o mundo de outro ângulo.</h2></div>
       <p>Selecione um país, abra um destino e deixe os dados guiarem o próximo passo.</p>
@@ -50,9 +53,9 @@ export function WorldMapExplorer({ onSelectCity }: { onSelectCity: (city: string
       </div>
       <aside className="world-card">
         <p className="eyebrow">PAÍS SELECIONADO</p>
-        <h3>{selected?.name ?? locations.find(item => item.id === selectedId)?.name}</h3>
-        <p>{selected?.signal ?? 'Explore um novo ponto no mapa para descobrir possibilidades.'}</p>
-        {selected && <button className="text-action" onClick={() => onSelectCity(selected.city)}>Explorar {selected.city} <span aria-hidden="true">↗</span></button>}
+        <h3>{selectedName}</h3>
+        <p>{selected?.signal ?? 'Este país está disponível no mapa. Pesquise uma cidade para abrir dados de clima, país e moeda.'}</p>
+        <button className="text-action" onClick={() => onSelectCity(selected?.city ?? selectedName)}>{selected ? `Explorar ${selected.city}` : `Pesquisar ${selectedName}`} <HugeiconsIcon icon={ArrowUpRight01Icon} size={17} strokeWidth={1.7} aria-hidden="true" /></button>
         <div className="map-countries" aria-label="Destinos sugeridos">
           {Object.entries(countryMeta).map(([id, meta]) => <button key={id} className={selectedId === id ? 'active' : ''} onClick={() => setSelectedId(id)} aria-pressed={selectedId === id}>{meta.name}</button>)}
         </div>
