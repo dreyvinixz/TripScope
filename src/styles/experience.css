@@ -42,6 +42,8 @@ body { background: var(--bg); color: var(--ink); }
   isolation: isolate;
 }
 .hero-video { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; opacity: .72; filter: saturate(1.02) contrast(1.08) brightness(.88); pointer-events: none; }
+.hero-video-toggle { position: absolute; top: 20px; right: 20px; z-index: 1; padding: 10px 14px; border: 1px solid #ffffff55; border-radius: 999px; background: #080a09b8; color: #f4f3eb; font: inherit; font-size: 12px; cursor: pointer; }
+.hero-video-toggle[hidden] { display: none; }
 .hero-stage::before {
   content: '';
   position: absolute;
@@ -62,6 +64,7 @@ body { background: var(--bg); color: var(--ink); }
 .hero-message { max-width: 580px; }
 .hero-kicker { color: #c7ed89; font-size: 10px; font-weight: 700; letter-spacing: .2em; }
 .hero-stage h1 { margin-top: 28px; color: #f4f3eb; font-size: clamp(4rem, 8vw, 8.7rem); font-weight: 500; letter-spacing: -.105em; line-height: .84; }
+.hero-stage h1 .hero-title-word { display: block; will-change: transform, opacity, filter; }
 .hero-stage h1 span { color: #f4f3eb; }
 .hero-stage h1 em { color: #c8f179; font-family: inherit; font-style: normal; font-weight: 500; }
 .hero-lede { max-width: 450px; margin-top: 35px; color: #adb8b0; font-size: 15px; line-height: 1.65; }
@@ -72,7 +75,7 @@ body { background: var(--bg); color: var(--ink); }
 .hero-search .search-symbol { color: #c8f179; }
 .hero-search .primary { color: #0b110b; background: #c8f179; }
 .hero-search .primary:hover:not(:disabled) { background: #e1ff9f; }
-.brand-logo { display: inline-grid; width: 68px; height: 68px; overflow: hidden; place-items: center; border-radius: 15px; background: #ffffff; box-shadow: 0 8px 24px #00000026; }
+.brand-logo { display: inline-grid; width: 68px; height: 68px; overflow: hidden; place-items: center; border-radius: 15px; background: transparent; }
 .brand-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .brand-logo-fallback { display: none; color: #0d5b47; font-size: 15px; font-weight: 700; letter-spacing: -.08em; }
 .brand-logo-fallback span { color: #0d5b47; }
@@ -85,9 +88,9 @@ body { background: var(--bg); color: var(--ink); }
 .interactive-globe { position: relative; width: min(100%, 700px); aspect-ratio: 1; cursor: grab; touch-action: none; }
 .interactive-globe:active { cursor: grabbing; }
 .interactive-globe canvas { display: block; width: 100% !important; height: 100% !important; }
-.interactive-globe::before { content: ''; position: absolute; inset: 18%; border-radius: 50%; background: #9ad9b11a; filter: blur(50px); pointer-events: none; }
-.globe-hint { position: absolute; right: 4%; bottom: 6%; color: #aebdb3; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
-.globe-fallback { display: none; place-items: center; width: 63%; aspect-ratio: 1; border: 1px solid #c8f179aa; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #bddc99, #436f5c 47%, #101916 76%); box-shadow: 0 0 100px #72e2a744; color: #d9f696; font-family: ui-monospace, monospace; font-size: 12px; }
+.interactive-globe::before { content: ''; position: absolute; inset: 18%; border-radius: 50%; background: #ffffff05; filter: blur(36px); pointer-events: none; }
+.globe-city-label { position: absolute; z-index: 2; color: #e2e1dc; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; letter-spacing: .04em; line-height: 1; opacity: 0; pointer-events: none; text-shadow: 0 1px 5px #000, 0 0 8px #000; transform: translate(-50%, -100%); white-space: nowrap; }
+.globe-fallback { display: none; place-items: center; width: 63%; aspect-ratio: 1; border: 1px solid #5d5d59aa; border-radius: 50%; background: #080808; box-shadow: 0 0 50px #ffffff0a; color: #c8c8c2; font-family: ui-monospace, monospace; font-size: 12px; }
 .interactive-globe.is-fallback .globe-fallback { display: grid; }
 .globe-fallback span:first-child { transform: translate(-64px, -35px); }
 .globe-fallback span:last-child { transform: translate(52px, 35px); }
@@ -129,6 +132,10 @@ body { background: var(--bg); color: var(--ink); }
 .world-card > p:not(.eyebrow) { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.55; }
 .text-action { align-self: flex-start; margin-top: 30px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
 .text-action svg { margin-left: 9px; vertical-align: middle; }
+.world-card-video { position: relative; flex: 1; min-height: 180px; margin-top: 22px; overflow: hidden; border-radius: 14px; background: #080a09; }
+.world-card-video::after { position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, #080a09a8); content: ''; pointer-events: none; }
+.world-card-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.world-card-video > span { position: absolute; z-index: 1; right: 14px; bottom: 12px; left: 14px; color: #fff; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
 .map-countries { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 35px; }
 .map-countries button { padding: 8px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 10px; }
 .map-countries button.active, .map-countries button:hover { border-color: var(--accent); color: var(--ink); background: var(--soft); }
@@ -137,7 +144,7 @@ body { background: var(--bg); color: var(--ink); }
 .motion-copy { display: flex; flex-direction: column; justify-content: center; padding: 18px 0; }
 .motion-copy h2 { max-width: 430px; margin-top: 18px; font-size: clamp(2.1rem, 4.4vw, 4.8rem); font-weight: 500; letter-spacing: -.09em; line-height: .92; }
 .motion-copy > p:last-child { max-width: 330px; margin-top: 24px; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.motion-globe { position: relative; display: grid; min-height: 430px; overflow: hidden; place-items: center; border-radius: 18px; background: #0b1511 url('/assets/pexels-martinpechy-2078266.jpg') center / cover; }
+.motion-globe { position: relative; display: grid; min-height: 430px; overflow: hidden; place-items: center; border-radius: 18px; background: #080808 url('/assets/pexels-martinpechy-2078266.jpg') center / cover no-repeat; }
 .motion-globe::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #080a0912 35%, #080a09a8); pointer-events: none; }
 .motion-globe .interactive-globe { z-index: 1; width: min(100%, 540px); }
 .motion-caption { position: absolute; z-index: 1; right: 20px; bottom: 18px; left: 20px; color: #e8f5d3; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }

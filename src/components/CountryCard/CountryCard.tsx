@@ -12,6 +12,6 @@ export function CountryCard({ country, timezone }: { country: Country; timezone:
       <div><dt>Código ISO</dt><dd>{country.countryCode}</dd></div>
     </dl>
     {country.currencies.length > 1 && <p className="source">Conversão com {country.currency?.code}: primeira moeda em ordem de código ISO.</p>}
-    <p className="source">REST Countries · fusos do país: {country.timezones.join(', ') || 'não informados'}</p>
+    <p className="source">countries.dev · fusos do país: {country.timezones.join(', ') || 'não informados'}</p>
   </>
 }

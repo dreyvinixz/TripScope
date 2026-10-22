@@ -9,6 +9,8 @@ export function localApi(): Plugin {
       const env = loadEnv(server.config.mode, server.config.root, '')
       process.env.GEMINI_API_KEY ??= env.GEMINI_API_KEY
       process.env.GEMINI_MODEL ??= env.GEMINI_MODEL
+      process.env.GEMINI_FALLBACK_MODELS ??= env.GEMINI_FALLBACK_MODELS
+      process.env.GEMINI_FALLBACK_MODEL ??= env.GEMINI_FALLBACK_MODEL
       server.middlewares.use('/api/gemini', (req, res) => {
         void (async () => {
           const origin = `http://${req.headers.host ?? 'localhost'}`

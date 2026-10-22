@@ -132,7 +132,7 @@ export function App() {
       <span className="header-caption">Seu próximo destino começa aqui.</span>
       <button className="button theme-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}><HugeiconsIcon icon={theme === 'light' ? Moon02Icon : Sun03Icon} size={20} strokeWidth={1.7} aria-hidden="true" /></button></header>
     <main id="main">
-      <LandingExperience destination={destination} initialValue={routeCity} onSearch={findCity} />
+      <LandingExperience destination={destination} initialValue={routeCity} onSearch={findCity} onSelectLocation={selectDestination} />
       {(history.length > 0 || favorites.length > 0) && <section className="saved-searches no-print" aria-label="Destinos salvos">
         {history.length > 0 && <div><span>Recentes</span>{history.map(city => <button className="chip" key={city} onClick={() => findCity(city)}>{city}</button>)}</div>}
         {favorites.length > 0 && <div><span>Favoritos</span>{favorites.map(location => <button className="chip" key={location.id} onClick={() => selectDestination(location)}><HugeiconsIcon icon={FavouriteIcon} size={14} strokeWidth={1.7} aria-hidden="true" /> {location.city}</button>)}</div>}

@@ -23,22 +23,36 @@ function rankLocation(item: z.infer<typeof locationDto>, query: string): number 
   return (preferredCountry ? 10_000 : 0) + (exactName ? 1_000 : 0) + (isUrbanCenter ? 100 : 0) + Math.min(item.population ?? 0, 50_000_000) / 1_000_000
 }
 export function normalizeLocations(data: unknown): Location[] {
-  const { results } = parseResponse(z.object({ results: z.array(locationDto).optional() }), data)
-  return (results ?? []).map(item => ({ id: item.id, city: item.name, country: item.country,
+  return parseLocationResults(data).map(item => ({ id: item.id, city: item.name, country: item.country,
     countryCode: item.country_code.toUpperCase(), latitude: item.latitude, longitude: item.longitude,
     timezone: item.timezone, region: item.admin1 ?? '' }))
 }
-export async function searchLocations(city: string, signal?: AbortSignal): Promise<Location[]> {
+function parseLocationResults(data: unknown): z.infer<typeof locationDto>[] {
+  const { results } = parseResponse(z.object({ results: z.array(z.unknown()).optional() }), data)
+  const validResults = (results ?? []).flatMap(item => {
+    const parsed = locationDto.safeParse(item)
+    return parsed.success ? [parsed.data] : []
+  })
+  if (results?.length && !validResults.length) throw new ServiceError('unexpected-response')
+  return validResults
+}
+export async function searchLocations(city: string, signal?: AbortSignal, countryCode?: string): Promise<Location[]> {
   const query = normalizeCityInput(city)
   if (query.length < 2 || query.length > 100) throw new ServiceError('not-found')
   const url = new URL(GEOCODING_API_URL)
-  url.search = new URLSearchParams({ name: query, count: '8', language: 'pt', format: 'json' }).toString()
+  const params = new URLSearchParams({ name: query, count: '8', language: 'pt', format: 'json' })
+  if (countryCode) params.set('countryCode', countryCode.trim().toUpperCase())
+  url.search = params.toString()
   const payload = await requestJson(url, { signal })
-  const parsed = parseResponse(z.object({ results: z.array(locationDto).optional() }), payload)
-  const ordered = [...(parsed.results ?? [])].sort((a, b) => rankLocation(b, query) - rankLocation(a, query))
+  const countryFilter = countryCode?.trim().toUpperCase()
+  const ordered = parseLocationResults(payload)
+    .filter(item => !countryFilter || item.country_code.toUpperCase() === countryFilter)
+    .sort((a, b) => rankLocation(b, query) - rankLocation(a, query))
   const preferredCountry = preferredCountryByCity[comparable(query)]
   const preferred = preferredCountry ? ordered.filter(item => item.country_code.toUpperCase() === preferredCountry) : []
-  const results = normalizeLocations({ results: preferred.length > 0 ? preferred : ordered })
+  const results = (preferred.length > 0 ? preferred : ordered).map(item => ({ id: item.id, city: item.name, country: item.country,
+    countryCode: item.country_code.toUpperCase(), latitude: item.latitude, longitude: item.longitude,
+    timezone: item.timezone, region: item.admin1 ?? '' }))
   if (!results.length) throw new ServiceError('not-found')
   return results
 }

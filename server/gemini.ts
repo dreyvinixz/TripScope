@@ -65,19 +65,40 @@ export async function handleGemini(request: Request): Promise<Response> {
   const key = process.env.GEMINI_API_KEY
   if (!key) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, 503)
   const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
-  if (!/^[a-zA-Z0-9.-]+$/.test(model)) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, 503)
+  const configuredFallbacks = process.env.GEMINI_FALLBACK_MODELS
+    || process.env.GEMINI_FALLBACK_MODEL
+    || 'gemini-3.6-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite'
+  const fallbackModels = configuredFallbacks.split(/[\s,;]+/).filter(Boolean)
+  if (!/^[a-zA-Z0-9.-]+$/.test(model)) {
+    return json({ message: 'O assistente de IA está temporariamente indisponível.' }, 503)
+  }
   try {
     const schema = input.action === 'plan' ? planSchema : answerSchema
-    const upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      signal: AbortSignal.timeout(40_000),
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        contents: [{ role: 'user', parts: [{ text: buildPrompt(input) }] }],
-        generationConfig: { responseMimeType: 'application/json', responseJsonSchema: z.toJSONSchema(schema), maxOutputTokens: 16000 },
-      }),
+    const body = JSON.stringify({
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      contents: [{ role: 'user', parts: [{ text: buildPrompt(input) }] }],
+      generationConfig: { responseMimeType: 'application/json', responseJsonSchema: z.toJSONSchema(schema), maxOutputTokens: 16000 },
     })
-    if (!upstream.ok) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, upstream.status === 429 ? 429 : 502)
+    const models = [...new Set([model, ...fallbackModels.filter(candidate => /^[a-zA-Z0-9.-]+$/.test(candidate))])].slice(0, 4)
+    if (models.length < fallbackModels.length + 1) {
+      console.warn('[Gemini] Ignorando fallbacks inválidos ou acima do limite de três reservas.')
+    }
+    let upstream: Response | undefined
+    for (let index = 0; index < models.length; index += 1) {
+      const candidateModel = models[index]
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${candidateModel}:generateContent`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        signal: AbortSignal.timeout(40_000), body,
+      })
+      if ((response.status === 429 || response.status >= 500) && index < models.length - 1) {
+        console.warn(`[Gemini] ${candidateModel} indisponível (${response.status}); tentando ${models[index + 1]}.`)
+        continue
+      }
+      upstream = response
+      break
+    }
+    if (!upstream) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, 503)
+    if (!upstream.ok) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, upstream.status === 429 ? 429 : upstream.status >= 500 ? 503 : 502)
     const envelope = envelopeSchema.parse(await upstream.json() as unknown)
     const candidate = envelope.candidates[0]
     if (candidate.finishReason && candidate.finishReason !== 'STOP') throw new Error('incomplete')
