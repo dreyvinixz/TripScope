@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
 import { loadEnv } from 'vite'
-import { handleGemini } from './gemini'
+import { handleGemini } from './gemini.ts'
 import { Readable } from 'node:stream'
 export function localApi(): Plugin {
   return {

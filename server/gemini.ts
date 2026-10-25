@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { aiRequestSchema, answerSchema, planSchema, type AIRequest } from '../src/types/travel'
+import { aiRequestSchema, answerSchema, planSchema, type AIRequest } from '../src/types/travel.ts'
 
 const MAX_BODY_BYTES = 32_768
 const json = (body: unknown, status = 200) => Response.json(body, {
