@@ -1,0 +1,103 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[left=3cm,right=2cm,top=2.7cm,bottom=1.8cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern,microtype,graphicx,booktabs,tabularx,enumitem,indentfirst}
+\usepackage{ragged2e,fancyhdr,titlesec,tikz,hyperref}
+\usetikzlibrary{positioning,arrows.meta}
+\hypersetup{hidelinks}
+\setlength{\parindent}{1.25cm}
+\setlength{\headheight}{53pt}
+\titleformat{\section}{\normalfont\fontsize{11}{13}\bfseries\MakeUppercase}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\normalfont\fontsize{11}{13}\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.2ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{1ex}{0.5ex}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{firstpage}{
+  \fancyhf{}
+  \lhead{\includegraphics[width=0.22\textwidth]{Imagens/FURG.png}}
+  \chead{\small\textbf{Universidade Federal do Rio Grande -- FURG}\\Sistemas Distribuídos\\Rio Grande/RS, Brasil\\Graduação em Engenharia de Computação}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\begin{document}
+\thispagestyle{firstpage}
+\justifying
+\vspace*{0.5cm}
+\begin{center}\textbf{CLIENTE/SERVIDOR COM WEB SERVICE: TRAVELAI}\end{center}
+\vspace{0.5cm}
+\noindent\textbf{Membros do grupo:} Andrey Vinicius Santos Souza -- 164402; Guilherme Rodrigues Estrella -- 164391.
+
+\section{Motivação e definição do problema}
+Ao planejar uma viagem, o usuário costuma consultar sites diferentes para descobrir a localização de uma cidade, a previsão do tempo, dados do país e a cotação da moeda local em relação ao real brasileiro (BRL). Essa consulta fragmentada dificulta a comparação das informações. O TravelAI reúne os dados em uma interface web e trata as respostas de serviços externos antes de apresentá-las.
+
+\section{Arquitetura do sistema e regras de funcionamento}
+O navegador executa a interface React e consulta diretamente quatro serviços públicos. A camada \texttt{src/services} valida as respostas JSON com Zod e as converte em modelos internos de \texttt{src/types}. O roteiro e as perguntas contextuais usam uma função serverless em \texttt{/api/gemini}, que consulta o Google Gemini sem expor a chave de API ao navegador.
+
+\subsection{Tecnologias utilizadas}
+React 19, TypeScript, Vite e Tailwind CSS compõem a interface. A Fetch API realiza as requisições; um cliente HTTP comum aplica timeout e converte falhas em erros conhecidos. Vitest e Testing Library cobrem a lógica e os componentes. Playwright testa a navegação no navegador com respostas simuladas. A função serverless usa a API REST do Gemini.
+
+\subsection{Web services integrados}
+\begin{table}[ht]
+\centering\small
+\caption{Serviços e informações usadas no TravelAI}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Serviço} & \textbf{Informações apresentadas ao usuário} \\
+\midrule
+Open-Meteo Geocoding & Cidade, país, código ISO, coordenadas e fuso horário. \\
+Open-Meteo Forecast & Condições atuais e previsão de cinco dias. \\
+countries.dev & Nome, bandeira, capital, população, idiomas e moedas do país. \\
+Frankfurter & Cotação indicativa de BRL para a moeda local e data de referência. \\
+Google Gemini & Roteiro de viagem e resposta contextual a uma pergunta. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Fluxo das requisições}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=7mm and 7mm, every node/.style={font=\small,align=center}, box/.style={draw,rounded corners,minimum height=8mm,text width=37mm}, arrow/.style={-{Stealth[length=2mm]}}]
+\node[box] (ui) {Interface React\\no navegador};
+\node[box,right=of ui] (services) {\texttt{src/services}\\validação e normalização};
+\node[box,right=of services] (public) {Open-Meteo\\countries.dev\\Frankfurter};
+\node[box,below=of services] (proxy) {Função \texttt{/api/gemini}\\chave no servidor};
+\node[box,right=of proxy] (gemini) {API Google Gemini};
+\draw[arrow] (ui) -- (services);
+\draw[arrow] (services) -- (public);
+\draw[arrow] (public.north) to[out=125,in=55] node[above,align=center]{JSON} (services.north);
+\draw[arrow] (services.north) to[out=125,in=55] node[above,align=center]{modelos internos} (ui.north);
+\draw[arrow] (ui.south) |- (proxy.west);
+\draw[arrow] (proxy) -- (gemini);
+\end{tikzpicture}
+\caption{Serviços públicos acessados pelo navegador; Gemini acessado pela função serverless.}
+\end{figure}
+
+\newpage
+Depois da busca de uma cidade, o usuário seleciona um resultado. Clima, país e câmbio têm estados independentes de carregamento, sucesso e falha; um cartão com erro não impede os demais de aparecer. Uma nova busca cancela as requisições anteriores. O câmbio parte de BRL e depende de uma moeda compatível com Frankfurter. Histórico, favoritos e tema são armazenados localmente no navegador.
+
+\section{Acesso à aplicação e execução local}
+\textbf{Endereço público de produção:} \url{https://travelai-furg.vercel.app}. A página foi publicada na Vercel em 25 de outubro de 2026 e respondeu HTTP 200 sem autenticação. O acesso para avaliação ocorre pelo navegador, sem instalação. A demonstração das APIs reais deve ser conferida no endereço antes da apresentação. A integração Gemini exige que \texttt{GEMINI\_API\_KEY} seja configurada no ambiente de produção; essa variável ainda não está definida.
+
+Para desenvolvimento local, são necessários Node.js 20 ou superior e npm. Na raiz do repositório, executar \texttt{npm ci} e \texttt{npm run dev}; o Vite informa o endereço local. As quatro APIs públicas não exigem chave. Para usar o Gemini, definir \texttt{GEMINI\_API\_KEY} no ambiente do servidor, com base em \texttt{.env.example}, e reiniciar o Vite. A chave não deve usar o prefixo \texttt{VITE\_}.
+
+Os comandos de verificação são \texttt{npm run lint}, \texttt{npm run typecheck}, \texttt{npm test}, \texttt{npm run build} e \texttt{npm run test:e2e}. Os testes unitários e E2E principais usam \textit{fixtures} e \textit{mocks}. \texttt{npm run test:contract} consulta os serviços públicos e depende da rede; a verificação final deve incluir a aplicação hospedada sem \textit{mocks}.
+
+\section{Dificuldades enfrentadas e soluções adotadas}
+\subsection{Indisponibilidade e formatos externos}
+Quatro serviços diferentes podem responder lentamente, falhar ou alterar seus formatos. O cliente HTTP converte erros em categorias conhecidas, e Zod verifica os JSONs antes da conversão para os modelos internos. O painel informa a falha do recurso afetado e mantém os demais cartões disponíveis.
+
+\subsection{Proteção da chave do Gemini}
+Uma chave inserida no código do cliente ficaria visível no navegador. A integração com Gemini foi isolada em \texttt{/api/gemini}. A função lê a chave do ambiente do servidor, valida a entrada e devolve apenas a resposta tratada para a interface.
+
+\subsection{Testes reproduzíveis}
+Testes automatizados que dependem de provedores externos podem falhar por rede ou limite de requisições. A suíte principal usa respostas simuladas e determinísticas; testes de contrato e a demonstração online verificam a integração real separadamente.
+
+\section{Conclusão}
+O \textbf{TravelAI} reúne informações de destinos vindas de serviços web distintos em uma interface útil ao viajante. A validação e a normalização das respostas reduzem o acoplamento com os formatos externos, enquanto os estados independentes permitem uso parcial quando um provedor falha. A integração com Gemini mostra o papel de uma função no servidor quando a aplicação precisa manter uma credencial fora do navegador. Para a entrega acadêmica, resta registrar e verificar a URL pública de produção.
+
+\end{document}

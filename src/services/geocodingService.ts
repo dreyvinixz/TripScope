@@ -27,6 +27,7 @@ export function normalizeLocations(data: unknown): Location[] {
     countryCode: item.country_code.toUpperCase(), latitude: item.latitude, longitude: item.longitude,
     timezone: item.timezone, region: item.admin1 ?? '' }))
 }
+
 function parseLocationResults(data: unknown): z.infer<typeof locationDto>[] {
   const { results } = parseResponse(z.object({ results: z.array(z.unknown()).optional() }), data)
   const validResults = (results ?? []).flatMap(item => {
@@ -45,6 +46,7 @@ export async function searchLocations(city: string, signal?: AbortSignal, countr
   url.search = params.toString()
   const payload = await requestJson(url, { signal })
   const countryFilter = countryCode?.trim().toUpperCase()
+  // Em nomes repetidos, prioriza o país esperado e centros urbanos antes de mostrar as opções.
   const ordered = parseLocationResults(payload)
     .filter(item => !countryFilter || item.country_code.toUpperCase() === countryFilter)
     .sort((a, b) => rankLocation(b, query) - rankLocation(a, query))

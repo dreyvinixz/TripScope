@@ -154,7 +154,7 @@ export function App() {
     </main>
     <footer className="site-footer no-print">
       <div className="footer-main"><a href="/" className="brand" aria-label="TravelAI início"><BrandLogo compact /></a><div><p className="eyebrow">TRAVELAI / WORLDWIDE INTELLIGENCE</p><p>Descubra. Planeje. Viaje.</p></div></div>
-      <div className="footer-links"><div><span>Explorar</span><a href="/#atlas-vivo">Atlas Vivo</a><a href="/#destinos">Destinos</a></div><div><span>Dados</span><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a><a href="https://restcountries.com/" target="_blank" rel="noreferrer">REST Countries</a><a href="https://frankfurter.dev/" target="_blank" rel="noreferrer">Frankfurter</a></div></div>
+      <div className="footer-links"><div><span>Explorar</span><a href="/#atlas-vivo">Atlas Vivo</a><a href="/#destinos">Destinos</a></div><div><span>Dados</span><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a><a href="https://countries.dev/" target="_blank" rel="noreferrer">countries.dev</a><a href="https://frankfurter.dev/" target="_blank" rel="noreferrer">Frankfurter</a></div></div>
       <div className="footer-bottom"><span>Projeto acadêmico FURG</span><span>Clima · País · Moeda · Contexto</span></div>
     </footer>
   </div>

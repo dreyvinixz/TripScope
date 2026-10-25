@@ -45,7 +45,8 @@ export function LandingExperience({ destination, initialValue, onSearch, onSelec
     video.addEventListener('playing', handlePlaying)
     video.addEventListener('error', handleError)
     video.addEventListener('canplay', play)
-    rootRef.current?.querySelector<HTMLButtonElement>('.hero-video-toggle')?.addEventListener('click', play)
+    const videoToggle = rootRef.current?.querySelector<HTMLButtonElement>('.hero-video-toggle')
+    videoToggle?.addEventListener('click', play)
     play()
     document.addEventListener('visibilitychange', syncPlayback)
     return () => {
@@ -53,7 +54,7 @@ export function LandingExperience({ destination, initialValue, onSearch, onSelec
       video.removeEventListener('playing', handlePlaying)
       video.removeEventListener('error', handleError)
       video.removeEventListener('canplay', play)
-      rootRef.current?.querySelector<HTMLButtonElement>('.hero-video-toggle')?.removeEventListener('click', play)
+      videoToggle?.removeEventListener('click', play)
       document.removeEventListener('visibilitychange', syncPlayback)
     }
   }, [destination])

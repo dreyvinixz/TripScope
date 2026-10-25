@@ -13,6 +13,7 @@ const countryDto = z.object({
   currencies: z.array(z.object({ code: z.string().regex(/^[A-Z]{3}$/), name: z.string(), symbol: z.string().optional() })).optional(),
 })
 export function normalizeCountry(data: unknown): Country {
+  // Alguns países omitem capital, idioma ou moeda; nesses casos a interface recebe null ou lista vazia.
   const item = parseResponse(countryDto, data)
   const currencies = [...(item.currencies ?? [])].sort((a, b) => a.code.localeCompare(b.code))
   const flag = item.flags?.svg ?? item.flags?.png ?? ''

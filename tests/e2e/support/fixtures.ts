@@ -70,11 +70,11 @@ export function countryPayload(countryCode: string) {
     FR: { common: 'France', official: 'French Republic', capital: ['Paris'], population: 68170228, languages: { fra: 'French' }, timezones: ['UTC+01:00'], currency: { code: 'EUR', name: 'Euro', symbol: '€' }, flag: 'fr' },
     BR: { common: 'Brazil', official: 'Federative Republic of Brazil', capital: ['Brasília'], population: 212559417, languages: { por: 'Portuguese' }, timezones: ['UTC-03:00'], currency: { code: 'BRL', name: 'Brazilian real', symbol: 'R$' }, flag: 'br' },
   }
-  if (countryCode === 'XX') return [{ name: { common: 'Exampleland', official: 'Exampleland' }, cca2: 'XX', flags: { svg: 'https://flagcdn.com/xx.svg' }, capital: ['Example City'], population: 1000, languages: { exm: 'Examplean' }, timezones: ['UTC'], currencies: { XXX: { name: 'Example coin', symbol: '¤' } } }]
-  if (countryCode === 'EX') return [{ name: { common: 'Exampleland', official: 'Exampleland' }, cca2: 'EX', population: 1000 }]
-  if (countryCode === 'LL') return [{ name: { common: 'A Country With A Deliberately Long Name', official: 'The Official Republic Of A Country With A Deliberately Long Name' }, cca2: 'LL', capital: ['A Capital With A Deliberately Long Name'], population: 1234567, languages: { lng: 'A Language With A Deliberately Long Name' }, timezones: ['UTC'], currencies: { EUR: { name: 'Euro', symbol: '€' } } }]
+  if (countryCode === 'XX') return { name: 'Exampleland', alpha2Code: 'XX', flags: { svg: 'https://flagcdn.com/xx.svg' }, capital: 'Example City', population: 1000, languages: [{ name: 'Examplean' }], timezones: ['UTC'], currencies: [{ code: 'XXX', name: 'Example coin', symbol: '¤' }] }
+  if (countryCode === 'EX') return { name: 'Exampleland', alpha2Code: 'EX', population: 1000 }
+  if (countryCode === 'LL') return { name: 'The Official Republic Of A Country With A Deliberately Long Name', alpha2Code: 'LL', capital: 'A Capital With A Deliberately Long Name', population: 1234567, languages: [{ name: 'A Language With A Deliberately Long Name' }], timezones: ['UTC'], currencies: [{ code: 'EUR', name: 'Euro', symbol: '€' }] }
   const country = countries[countryCode] ?? countries.JP
-  return [{ name: { common: country.common, official: country.official }, cca2: countryCode, flags: { svg: `https://flagcdn.com/${country.flag}.svg` }, capital: country.capital, population: country.population, languages: country.languages, timezones: country.timezones, currencies: country.currency ? { [country.currency.code]: { name: country.currency.name, symbol: country.currency.symbol } } : undefined }]
+  return { name: country.official, alpha2Code: countryCode, flags: { svg: `https://flagcdn.com/${country.flag}.svg` }, capital: country.capital?.[0], population: country.population, languages: country.languages ? Object.values(country.languages).map(name => ({ name })) : undefined, timezones: country.timezones, currencies: country.currency ? [country.currency] : undefined }
 }
 
 export function currencyPayload(target: string) {

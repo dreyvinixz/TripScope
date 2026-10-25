@@ -41,7 +41,7 @@ export async function mockServices(page: Page, options: MockOptions = {}): Promi
     if (options.weather) return failRoute(route, options.weather)
     await fulfillJson(route, weatherPayload())
   })
-  await page.route('**/restcountries.com/v3.1/alpha/**', async route => {
+  await page.route('**/countries.dev/alpha/**', async route => {
     if (options.country) return failRoute(route, options.country)
     const code = new URL(route.request().url()).pathname.split('/').pop() ?? 'JP'
     await fulfillJson(route, countryPayload(code))
@@ -49,7 +49,6 @@ export async function mockServices(page: Page, options: MockOptions = {}): Promi
   await page.route('**/api.frankfurter.dev/v1/**', async route => {
     state.currencyRequests.push(route.request().url())
     if (options.currency) return failRoute(route, options.currency)
-    if (route.request().url().includes('/currencies')) return fulfillJson(route, { JPY: 'Japanese yen', EUR: 'Euro', GBP: 'Pound sterling', USD: 'United States dollar', BRL: 'Brazilian real' })
     const target = new URL(route.request().url()).searchParams.get('symbols') ?? 'JPY'
     await fulfillJson(route, currencyPayload(target))
   })

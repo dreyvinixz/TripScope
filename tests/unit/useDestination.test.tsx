@@ -83,13 +83,14 @@ describe('useDestination', () => {
 
   it('não consulta câmbio quando o país não informa moeda compatível', async () => {
     countryMock.mockResolvedValue(countryWithoutCurrency)
+    searchMock.mockResolvedValue([{ ...paris, countryCode: 'XX' }])
     const { result } = renderHook(() => useDestination())
 
     await act(async () => { await result.current.search('Paris') })
 
     expect(currencyMock).not.toHaveBeenCalled()
     expect(result.current.destination?.currency).toEqual({
-      status: 'error', message: 'Câmbio indisponível: este país não informa uma moeda compatível.',
+      status: 'error', message: 'Câmbio indisponível: não foi possível determinar a moeda deste destino.',
     })
   })
 

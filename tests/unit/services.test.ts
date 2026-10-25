@@ -85,18 +85,17 @@ describe('normalizadores de Web Services', () => {
 
   it('consulta moedas suportadas e retorna a cotação interna', async () => {
     const fetchMock = vi.fn<typeof fetch>()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ JPY: 'Japanese yen' }), { status: 200 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify(currencyResponse), { status: 200 }))
+      .mockResolvedValue(new Response(JSON.stringify(currencyResponse), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
 
     await expect(getCurrencyQuote('jpy')).resolves.toMatchObject({ targetCurrency: 'JPY', rate: 29.42 })
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it('retorna erro conhecido para moeda ausente ou não suportada', async () => {
     await expect(getCurrencyQuote(undefined)).rejects.toMatchObject({ code: 'unsupported-currency' })
 
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ USD: 'US Dollar' }), { status: 200 }))
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ base: 'BRL', date: '2026-09-18', rates: { USD: 0.19 } }), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
     await expect(getCurrencyQuote('JPY')).rejects.toMatchObject({ code: 'unsupported-currency' })
   })

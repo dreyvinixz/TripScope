@@ -1,0 +1,7 @@
+tmp/
+docs/
+tests/
+playwright-report/
+test-results/
+coverage/
+Roadmap.md

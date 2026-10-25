@@ -1,7 +1,5 @@
-[
-  {
-    "name": { "common": "Exampleland", "official": "Exampleland" },
-    "cca2": "EX",
-    "population": 1000
-  }
-]
+{
+  "name": "Exampleland",
+  "alpha2Code": "EX",
+  "population": 1000
+}

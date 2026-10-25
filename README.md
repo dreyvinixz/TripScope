@@ -1,59 +1,59 @@
 # TravelAI
 
-Aplicação web para pesquisar um destino e reunir, em uma única tela, localização, clima, informações do país e uma cotação indicativa de BRL para a moeda local. Os dados factuais vêm de Web Services externos e são convertidos para modelos internos antes de chegarem aos componentes React.
+Cliente web para explorar destinos e reunir localização, clima, dados do país, câmbio e sugestões de viagem em uma interface. Projeto da disciplina de Sistemas Distribuídos da FURG.
 
-## Stack
+## Acesso ao trabalho
 
-- React 19, TypeScript estrito e Vite
-- Tailwind CSS
-- `fetch` com timeout e erros de domínio normalizados
-- Zod para validação em runtime das respostas externas
-- Vitest + Testing Library para testes determinísticos
-- Playwright para smoke tests E2E
-- Vercel Function apenas para a integração futura com Gemini
+**Acesso público:** [https://travelai-furg.vercel.app](https://travelai-furg.vercel.app). Publicado na Vercel em 25/10/2026; confirme a página e as APIs reais antes da apresentação. O Gemini está no código, mas ainda não há `GEMINI_API_KEY` configurada no projeto Vercel; sem ela, roteiro e perguntas de IA não funcionam no deploy.
 
-## APIs utilizadas
+Relatório entregue pelo grupo: [Sistemas_Distribuidos_Relatorio.pdf](docs/Sistemas_Distribuidos_Relatorio.pdf). As correções identificadas para o PDF estão em [docs/report/README.md](docs/report/README.md).
 
-| Serviço | Uso |
-|---|---|
-| Open-Meteo Geocoding | cidade, país, ISO, coordenadas e timezone |
-| Open-Meteo Forecast | clima atual e cinco dias de previsão |
-| REST Countries | nome, bandeira, capital, população, idiomas, moedas e fusos |
-| Frankfurter | cotação de BRL para a moeda do destino |
+## Funcionalidades
 
-As respostas dessas APIs são DTOs privados dos serviços. A interface recebe somente os modelos em `src/types` (`Location`, `WeatherReport`, `Country` e `CurrencyQuote`).
+- Busca de cidades, escolha entre resultados e abertura de links de destino.
+- Clima atual e previsão de cinco dias, com alternância entre °C e °F.
+- Capital, população, idiomas e moeda do país.
+- Conversão indicativa de BRL para a moeda local, com data da cotação.
+- Histórico, favoritos e tema salvos no navegador; compartilhamento do link do destino.
+- Roteiro e perguntas contextuais via Gemini, quando a função `/api/gemini` e a chave do servidor estiverem operacionais.
+- Estados de carregamento e mensagens próprias para falhas parciais das APIs.
 
-## Estrutura principal
+## Serviços e tratamento das respostas
 
-```text
-src/
-  components/    interface React
-  hooks/         orquestração do fluxo de destino
-  services/      HTTP, validação e normalização das APIs
-  types/         contratos internos
-  utils/         formatação, validação e códigos meteorológicos
-tests/
-  fixtures/      payloads mínimos e sanitizados
-  unit/          testes determinísticos
-  contract/      smoke tests opcionais contra APIs públicas
-api/             função serverless do Gemini
-docs/             arquitetura, relatório e apresentação
-```
+| Serviço | Requisição feita pelo | Dados usados na interface |
+| --- | --- | --- |
+| [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) | Navegador | cidade, país, código ISO, coordenadas e fuso |
+| [Open-Meteo Forecast](https://open-meteo.com/en/docs) | Navegador | condições atuais e previsão para cinco dias |
+| [countries.dev](https://countries.dev/docs) | Navegador | nome, bandeira, capital, população, idiomas e moedas |
+| [Frankfurter](https://frankfurter.dev/) | Navegador | cotação BRL → moeda do destino e data de referência |
+| Google Gemini | Função Vercel em `/api/gemini` | roteiro estruturado ou resposta a pergunta |
+
+Os serviços em `src/services` validam os JSONs externos com Zod e convertem os dados para modelos em `src/types`. Os componentes exibem esses modelos, não os JSONs brutos. O fluxo de busca cancela requisições anteriores; clima, país e câmbio podem falhar separadamente. A cotação é informativa e pode não representar o valor de uma operação de câmbio. O Gemini recebe o contexto do destino e as preferências enviadas pelo usuário; as sugestões geradas exigem conferência.
+
+## Demonstração
+
+1. Abra [travelai-furg.vercel.app](https://travelai-furg.vercel.app) em uma janela anônima e pesquise `Tokyo`.
+2. Escolha o resultado, se houver mais de um. Mostre clima, cinco dias, país e conversão de R$ 1.000 para JPY.
+3. Altere o valor em BRL e a unidade da temperatura; salve o destino nos favoritos e recarregue a página.
+4. Gere um roteiro de três dias ou pergunte o que levar na mala depois que `GEMINI_API_KEY` estiver configurada na Vercel. Mostre a resposta tratada e a opção de impressão.
+5. Explique de onde vem cada dado e como o painel reage se uma API falhar. Use outro destino, como `Paris`, para uma segunda busca.
+
+O roteiro individual e os pontos de explicação estão em [docs/presentation/README.md](docs/presentation/README.md).
 
 ## Execução local
 
 Requisitos: Node.js 20 ou superior e npm.
 
-```bash
-npm install
+```powershell
+npm ci
 npm run dev
 ```
 
-Abra a URL exibida pelo Vite, normalmente `http://localhost:5173`.
+Abra o endereço mostrado pelo Vite. Para testar o Gemini localmente, copie `.env.example` para `.env.local`, defina `GEMINI_API_KEY` e reinicie o Vite. A chave fica no servidor: nunca use o prefixo `VITE_`, nem a inclua no código ou no relatório. As quatro APIs públicas funcionam sem chave.
 
-## Comandos de qualidade
+## Verificação
 
-```bash
+```powershell
 npm run lint
 npm run typecheck
 npm test
@@ -61,41 +61,11 @@ npm run build
 npm run test:e2e
 ```
 
-`test:e2e` executa a matriz Chromium desktop, tablet e mobile com fixtures determinísticas. Os artefatos de trace, screenshot e vídeo são preservados somente quando um teste falha. Para validar uma implantação pública sem iniciar o Vite local:
+Os testes unitários e E2E principais usam fixtures e mocks. `npm run test:contract` consulta os serviços públicos e depende de rede. Depois de publicar, execute o smoke da página online:
 
-```bash
-$env:E2E_BASE_URL='https://seu-deploy.example.com'
+```powershell
+$env:E2E_BASE_URL='https://URL-PUBLICA-CONFIRMADA'
 npm run test:e2e -- --grep "\[public\]" --project=desktop-chromium
 ```
 
-O smoke público é opcional e fica ignorado quando `E2E_BASE_URL` não está definida. A integração contínua executa instalação limpa, lint, tipos, testes unitários, cobertura, build e a matriz E2E. O workflow também pode executar o smoke público quando a variável de repositório `E2E_BASE_URL` estiver configurada.
-
-Os testes unitários usam fixtures e mocks, portanto não dependem da disponibilidade das APIs. Para executar o teste de contrato opcional contra os endpoints públicos:
-
-```bash
-npm run test:contract
-```
-
-Esse teste pode falhar por instabilidade, limite ou indisponibilidade de um serviço externo e não substitui a suíte determinística.
-
-## Variáveis de ambiente
-
-Copie `.env.example` para `.env.local` quando precisar executar a integração server-side:
-
-```bash
-GEMINI_API_KEY=sua-chave-local
-```
-
-A chave do Gemini deve permanecer no servidor, nunca em código do cliente, fixtures ou artefatos versionados. As APIs públicas de geocodificação, clima, países e câmbio não exigem credenciais.
-
-## Tratamento de erros
-
-Os serviços convertem falhas para `ServiceError` com códigos conhecidos: `not-found`, `timeout`, `network`, `unavailable`, `unexpected-response` e `unsupported-currency`. Isso permite que a interface preserve dados já carregados quando um serviço secundário falhar.
-
-## Estado do projeto
-
-A Sprint 0 foi concluída. A Sprint 1 implementou os contratos e normalizadores dos Web Services, validação em runtime, cinco dias de previsão, mapeamento meteorológico acessível, fixtures e testes de sucesso/falha. O plano detalhado das próximas entregas está em [Roadmap.md](./Roadmap.md).
-
-## Deploy
-
-O projeto está preparado para Vercel com `vercel.json`. Antes de um deploy de produção, configure `GEMINI_API_KEY` como variável protegida no ambiente server-side e execute os comandos de qualidade acima.
+Esse smoke verifica a abertura da página; a demonstração das APIs reais e do Gemini ainda deve ser feita no endereço público. A configuração de deploy está em `vercel.json`. Consulte [docs/architecture/README.md](docs/architecture/README.md) para o fluxo de dados.

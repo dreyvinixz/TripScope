@@ -1,12 +1,10 @@
-[
-  {
-    "name": { "common": "Japan", "official": "Japan" },
-    "cca2": "JP",
-    "flags": { "svg": "https://flagcdn.com/jp.svg", "png": "https://flagcdn.com/w320/jp.png" },
-    "capital": ["Tokyo"],
-    "population": 125124989,
-    "languages": { "jpn": "Japanese" },
-    "timezones": ["UTC+09:00"],
-    "currencies": { "JPY": { "name": "Japanese yen", "symbol": "¥" } }
-  }
-]
+{
+  "name": "Japan",
+  "alpha2Code": "JP",
+  "flags": { "svg": "https://flagcdn.com/jp.svg", "png": "https://flagcdn.com/w320/jp.png" },
+  "capital": "Tokyo",
+  "population": 125124989,
+  "languages": [{ "name": "Japanese" }],
+  "timezones": ["UTC+09:00"],
+  "currencies": [{ "code": "JPY", "name": "Japanese yen", "symbol": "¥" }]
+}

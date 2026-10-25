@@ -13,6 +13,7 @@ const weatherDto = z.object({
     weather_code: z.array(z.number().int()).length(5) }),
 })
 export function normalizeWeather(data: unknown): WeatherReport {
+  // O modelo interno mantém unidades explícitas e evita propagar os nomes do DTO externo.
   const { current, daily } = parseResponse(weatherDto, data)
   if (new Set(daily.time).size !== 5 || daily.time.some((date, index) => daily.time.indexOf(date) !== index)) {
     throw new ServiceError('unexpected-response')

@@ -54,6 +54,7 @@ export function useDestination() {
     }
     await Promise.all([
       settle(() => getWeather(location, request.signal), 'o clima').then(result => update('weather', result)),
+      // A moeda só pode ser buscada depois de descobrir o país, salvo os códigos conhecidos abaixo.
       (async () => {
         const countryPromise = settle(() => getCountry(location.countryCode, request.signal), 'o país')
         const knownCurrency = fallbackCurrencyByCountry[location.countryCode.toUpperCase()]

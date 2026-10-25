@@ -4,6 +4,7 @@ import { parseResponse, requestJson, ServiceError } from './httpClient'
 export const CURRENCY_API_URL = 'https://api.frankfurter.dev/v1'
 const quoteDto = z.object({ base: z.literal('BRL'), date: z.iso.date(), rates: z.record(z.string(), z.number().positive()) })
 export function normalizeQuote(data: unknown, target: string): CurrencyQuote {
+  // Frankfurter retorna taxas sem garantir o código solicitado; rejeitamos a cotação ausente.
   const quote = parseResponse(quoteDto, data)
   const normalizedTarget = target.trim().toUpperCase()
   const rate = quote.rates[normalizedTarget]
