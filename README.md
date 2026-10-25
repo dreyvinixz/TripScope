@@ -4,7 +4,7 @@ Cliente web para explorar destinos e reunir localização, clima, dados do país
 
 ## Acesso ao trabalho
 
-**Acesso público:** [https://travelai-furg.vercel.app](https://travelai-furg.vercel.app). Publicado na Vercel em 25/10/2026; confirme a página e as APIs reais antes da apresentação. O Gemini está no código, mas ainda não há `GEMINI_API_KEY` configurada no projeto Vercel; sem ela, roteiro e perguntas de IA não funcionam no deploy.
+**Acesso público:** [https://travelai-furg.vercel.app](https://travelai-furg.vercel.app). Publicado na Vercel em 25/10/2026. Em 25/10/2026, a função Gemini respondeu HTTP 200 tanto para uma pergunta contextual quanto para a geração de roteiro; a resposta foi validada e tratada no servidor. Quando o modelo principal respondeu HTTP 503, o fallback `gemini-3.5-flash-lite` concluiu a solicitação.
 
 Relatório entregue pelo grupo: [Sistemas_Distribuidos_Relatorio.pdf](docs/Sistemas_Distribuidos_Relatorio.pdf). As correções identificadas para o PDF estão em [docs/report/README.md](docs/report/README.md).
 
@@ -35,7 +35,7 @@ Os serviços em `src/services` validam os JSONs externos com Zod e convertem os 
 1. Abra [travelai-furg.vercel.app](https://travelai-furg.vercel.app) em uma janela anônima e pesquise `Tokyo`.
 2. Escolha o resultado, se houver mais de um. Mostre clima, cinco dias, país e conversão de R$ 1.000 para JPY.
 3. Altere o valor em BRL e a unidade da temperatura; salve o destino nos favoritos e recarregue a página.
-4. Gere um roteiro de três dias ou pergunte o que levar na mala depois que `GEMINI_API_KEY` estiver configurada na Vercel. Mostre a resposta tratada e a opção de impressão.
+4. Gere um roteiro de três dias ou pergunte o que levar na mala. Mostre a resposta tratada e a opção de impressão.
 5. Explique de onde vem cada dado e como o painel reage se uma API falhar. Use outro destino, como `Paris`, para uma segunda busca.
 
 O roteiro individual e os pontos de explicação estão em [docs/presentation/README.md](docs/presentation/README.md).
@@ -49,7 +49,7 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço mostrado pelo Vite. Para testar o Gemini localmente, copie `.env.example` para `.env.local`, defina `GEMINI_API_KEY` e reinicie o Vite. A chave fica no servidor: nunca use o prefixo `VITE_`, nem a inclua no código ou no relatório. As quatro APIs públicas funcionam sem chave.
+Abra o endereço mostrado pelo Vite. Para testar o Gemini localmente, copie `.env.example` para `.env.local`, defina uma chave válida do Gemini e reinicie o Vite. A chave fica no servidor: nunca use o prefixo `VITE_`, nem a inclua no código ou no relatório. As quatro APIs públicas funcionam sem chave.
 
 ## Verificação
 

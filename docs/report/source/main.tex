@@ -81,7 +81,7 @@ Google Gemini & Roteiro de viagem e resposta contextual a uma pergunta. \\
 Depois da busca de uma cidade, o usuário seleciona um resultado. Clima, país e câmbio têm estados independentes de carregamento, sucesso e falha; um cartão com erro não impede os demais de aparecer. Uma nova busca cancela as requisições anteriores. O câmbio parte de BRL e depende de uma moeda compatível com Frankfurter. Histórico, favoritos e tema são armazenados localmente no navegador.
 
 \section{Acesso à aplicação e execução local}
-\textbf{Endereço público de produção:} \url{https://travelai-furg.vercel.app}. A página foi publicada na Vercel em 25 de outubro de 2026 e respondeu HTTP 200 sem autenticação. O acesso para avaliação ocorre pelo navegador, sem instalação. A demonstração das APIs reais deve ser conferida no endereço antes da apresentação. A integração Gemini exige que \texttt{GEMINI\_API\_KEY} seja configurada no ambiente de produção; essa variável ainda não está definida.
+\textbf{Endereço público de produção:} \url{https://travelai-furg.vercel.app}. A página foi publicada na Vercel em 25 de outubro de 2026 e respondeu HTTP 200 sem autenticação. O acesso para avaliação ocorre pelo navegador, sem instalação. Em 25 de outubro de 2026, a função Gemini respondeu HTTP 200 nos testes reais de pergunta contextual e geração de roteiro. Quando o modelo principal retornou HTTP 503, o fallback \texttt{gemini-3.5-flash-lite} concluiu a solicitação.
 
 Para desenvolvimento local, são necessários Node.js 20 ou superior e npm. Na raiz do repositório, executar \texttt{npm ci} e \texttt{npm run dev}; o Vite informa o endereço local. As quatro APIs públicas não exigem chave. Para usar o Gemini, definir \texttt{GEMINI\_API\_KEY} no ambiente do servidor, com base em \texttt{.env.example}, e reiniciar o Vite. A chave não deve usar o prefixo \texttt{VITE\_}.
 
@@ -98,6 +98,6 @@ Uma chave inserida no código do cliente ficaria visível no navegador. A integr
 Testes automatizados que dependem de provedores externos podem falhar por rede ou limite de requisições. A suíte principal usa respostas simuladas e determinísticas; testes de contrato e a demonstração online verificam a integração real separadamente.
 
 \section{Conclusão}
-O \textbf{TravelAI} reúne informações de destinos vindas de serviços web distintos em uma interface útil ao viajante. A validação e a normalização das respostas reduzem o acoplamento com os formatos externos, enquanto os estados independentes permitem uso parcial quando um provedor falha. A integração com Gemini mostra o papel de uma função no servidor quando a aplicação precisa manter uma credencial fora do navegador. Para a entrega acadêmica, resta registrar e verificar a URL pública de produção.
+O \textbf{TravelAI} reúne informações de destinos vindas de serviços web distintos em uma interface útil ao viajante. A validação e a normalização das respostas reduzem o acoplamento com os formatos externos, enquanto os estados independentes permitem uso parcial quando um provedor falha. A integração com Gemini mantém a credencial fora do navegador, valida os dados e apresenta respostas estruturadas. Os testes online confirmaram a geração de roteiros e respostas contextuais, incluindo o uso de um modelo alternativo quando o principal ficou indisponível.
 
 \end{document}

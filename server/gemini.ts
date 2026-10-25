@@ -24,7 +24,7 @@ export const systemInstruction = [
   'Para dias fora das datas fornecidas, declare ausência de previsão. Priorize interiores em dias de chuva quando razoável.',
   'Não garanta preços, horários, segurança, disponibilidade ou abertura de atrações. Peça confirmação em fontes oficiais.',
   'Considere o orçamento total da viagem em BRL e convertido quando disponível; estimativas não são cotações.',
-  'Gere exatamente a quantidade de dias solicitada, sequenciais de 1 até days, com manhã, tarde e noite.',
+  'Gere exatamente a quantidade de dias solicitada, sequenciais de 1 até days, com manhã, tarde e noite. Seja conciso: uma ou duas frases por período.',
   'Não gere HTML nem links não verificados. Perguntas devem permanecer no contexto de viagem deste destino.',
 ].join(' ')
 
@@ -77,28 +77,42 @@ export async function handleGemini(request: Request): Promise<Response> {
     const body = JSON.stringify({
       systemInstruction: { parts: [{ text: systemInstruction }] },
       contents: [{ role: 'user', parts: [{ text: buildPrompt(input) }] }],
-      generationConfig: { responseMimeType: 'application/json', responseJsonSchema: z.toJSONSchema(schema), maxOutputTokens: 16000 },
+      generationConfig: {
+        responseMimeType: 'application/json', responseJsonSchema: z.toJSONSchema(schema),
+        maxOutputTokens: input.action === 'plan' ? 8192 : 2048,
+        thinkingConfig: { thinkingLevel: 'low' },
+      },
     })
-    const models = [...new Set([model, ...fallbackModels.filter(candidate => /^[a-zA-Z0-9.-]+$/.test(candidate))])].slice(0, 4)
+    const models = [...new Set([model, ...fallbackModels.filter(candidate => /^[a-zA-Z0-9.-]+$/.test(candidate))])].slice(0, 3)
     if (models.length < fallbackModels.length + 1) {
-      console.warn('[Gemini] Ignorando fallbacks inválidos ou acima do limite de três reservas.')
+      console.warn('[Gemini] Ignorando fallbacks inválidos ou acima do limite de duas reservas.')
     }
     let upstream: Response | undefined
+    let timedOut = false
     for (let index = 0; index < models.length; index += 1) {
       const candidateModel = models[index]
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${candidateModel}:generateContent`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-        signal: AbortSignal.timeout(40_000), body,
-      })
-      if ((response.status === 429 || response.status >= 500) && index < models.length - 1) {
-        console.warn(`[Gemini] ${candidateModel} indisponível (${response.status}); tentando ${models[index + 1]}.`)
-        continue
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${candidateModel}:generateContent`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+          signal: AbortSignal.timeout(14_000), body,
+        })
+        if ((response.status === 408 || response.status === 429 || response.status >= 500) && index < models.length - 1) {
+          console.warn(`[Gemini] ${candidateModel} indisponível (${response.status}); tentando ${models[index + 1]}.`)
+          continue
+        }
+        upstream = response
+        break
+      } catch (error) {
+        timedOut ||= error instanceof Error && error.name === 'TimeoutError'
+        console.warn(`[Gemini] ${candidateModel} falhou (${error instanceof Error ? error.name : 'erro desconhecido'}).`)
+        if (index === models.length - 1) break
       }
-      upstream = response
-      break
     }
-    if (!upstream) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, 503)
-    if (!upstream.ok) return json({ message: 'O assistente de IA está temporariamente indisponível.' }, upstream.status === 429 ? 429 : upstream.status >= 500 ? 503 : 502)
+    if (!upstream) return json({ message: 'O assistente de IA demorou demais para responder. Tente novamente.' }, timedOut ? 504 : 503)
+    if (!upstream.ok) {
+      console.warn(`[Gemini] Provedor respondeu HTTP ${upstream.status}.`)
+      return json({ message: 'O assistente de IA está temporariamente indisponível.' }, upstream.status === 429 ? 429 : upstream.status >= 500 ? 503 : 502)
+    }
     const envelope = envelopeSchema.parse(await upstream.json() as unknown)
     const candidate = envelope.candidates[0]
     if (candidate.finishReason && candidate.finishReason !== 'STOP') throw new Error('incomplete')
@@ -109,7 +123,8 @@ export async function handleGemini(request: Request): Promise<Response> {
       return json(plan)
     }
     return json(answerSchema.parse(output))
-  } catch {
+  } catch (error) {
+    console.warn(`[Gemini] Falha ao processar a resposta: ${error instanceof Error ? error.name : 'erro desconhecido'}.`)
     return json({ message: 'O assistente de IA está temporariamente indisponível. Tente novamente.' }, 502)
   }
 }
