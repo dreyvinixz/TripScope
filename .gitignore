@@ -4,6 +4,8 @@ coverage/
 playwright-report/
 test-results/
 .vercel/
+/tmp/pdfs/
+/docs/report/source/tmp/
 
 .env
 .env.*
@@ -12,7 +14,3 @@ test-results/
 *.log
 .DS_Store
 Thumbs.db
-
-
-.vercel
-.env*
