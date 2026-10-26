@@ -36,7 +36,7 @@
 Ao planejar uma viagem, o usuário costuma consultar sites diferentes para descobrir a localização de uma cidade, a previsão do tempo, dados do país e a cotação da moeda local em relação ao real brasileiro (BRL). Essa consulta fragmentada dificulta a comparação das informações. O TravelAI reúne os dados em uma interface web e trata as respostas de serviços externos antes de apresentá-las.
 
 \section{Arquitetura do sistema e regras de funcionamento}
-O navegador executa a interface React e consulta diretamente quatro serviços públicos. A camada \texttt{src/services} valida as respostas JSON com Zod e as converte em modelos internos de \texttt{src/types}. O roteiro e as perguntas contextuais usam uma função serverless em \texttt{/api/gemini}, que consulta o Google Gemini sem expor a chave de API ao navegador.
+O navegador executa a interface React e consulta diretamente quatro serviços públicos. A camada \texttt{src/services} valida as respostas JSON com Zod e as converte em modelos internos de \texttt{src/types}, apresentados pelos componentes em vez de expor os JSONs brutos. O roteiro e as perguntas contextuais usam uma função serverless em \texttt{/api/gemini}, que consulta o Google Gemini sem expor a chave de API ao navegador.
 
 \subsection{Tecnologias utilizadas}
 React 19, TypeScript, Vite e Tailwind CSS compõem a interface. A Fetch API realiza as requisições; um cliente HTTP comum aplica timeout e converte falhas em erros conhecidos. Vitest e Testing Library cobrem a lógica e os componentes. Playwright testa a navegação no navegador com respostas simuladas. A função serverless usa a API REST do Gemini.
@@ -78,7 +78,9 @@ Google Gemini & Roteiro de viagem e resposta contextual a uma pergunta. \\
 \end{figure}
 
 \newpage
-Depois da busca de uma cidade, o usuário seleciona um resultado. Clima, país e câmbio têm estados independentes de carregamento, sucesso e falha; um cartão com erro não impede os demais de aparecer. Uma nova busca cancela as requisições anteriores. O câmbio parte de BRL e depende de uma moeda compatível com Frankfurter. Histórico, favoritos e tema são armazenados localmente no navegador.
+Depois da busca de uma cidade, o usuário seleciona um resultado; entre nomes repetidos, a aplicação prioriza o país esperado e centros urbanos. A seleção fornece coordenadas e fuso para a previsão, e o código ISO do país para consultar os dados nacionais. A cotação parte de BRL e é solicitada apenas quando a moeda do destino é compatível. Clima, país e câmbio têm estados independentes de carregamento, sucesso e falha; uma nova busca cancela as requisições anteriores. O navegador recebe os modelos internos após validação com Zod e apresenta campos formatados, não o JSON bruto.
+
+A Vercel foi escolhida por hospedar os arquivos estáticos do Vite e a função serverless no mesmo domínio HTTPS. Isso oferece acesso remoto pelo navegador e mantém a chave Gemini no ambiente do servidor, sem exigir a administração de um servidor próprio. A interface envia as solicitações de IA como JSON para \texttt{/api/gemini}; a função restringe método e origem, limita o corpo, valida a entrada e solicita JSON estruturado. A resposta é validada novamente e, no roteiro, a quantidade e a sequência dos dias também são conferidas antes de retornar ao frontend. Em falhas transitórias ou timeout, a função tenta um modelo alternativo.
 
 \section{Acesso à aplicação e execução local}
 \textbf{Endereço público de produção:} \url{https://travelai-furg.vercel.app}. A página foi publicada na Vercel em 25 de outubro de 2026 e respondeu HTTP 200 sem autenticação. O acesso para avaliação ocorre pelo navegador, sem instalação. Em 25 de outubro de 2026, a função Gemini respondeu HTTP 200 nos testes reais de pergunta contextual e geração de roteiro. Quando o modelo principal retornou HTTP 503, o fallback \texttt{gemini-3.5-flash-lite} concluiu a solicitação.

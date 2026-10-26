@@ -22,4 +22,6 @@ A busca resolve a cidade em uma `Location`. Após a seleção, `useDestination` 
 
 `src/services` faz as requisições HTTP, valida os JSONs externos com Zod e devolve apenas os modelos de `src/types` para a interface. Os quatro serviços públicos são chamados diretamente pelo navegador. O Gemini é chamado pela função `/api/gemini`; `GEMINI_API_KEY` permanece no ambiente do servidor. O histórico, favoritos e tema são dados locais do navegador, sem conta de usuário ou banco de dados.
 
+A Vercel hospeda os arquivos estáticos do Vite e a função serverless no mesmo domínio HTTPS. Essa opção permite acesso remoto pelo navegador e mantém a chave Gemini no ambiente do servidor sem administrar uma máquina ou servidor próprio.
+
 O formato e a disponibilidade das respostas pertencem aos provedores externos. Por isso, `src/services/httpClient.ts` aplica timeout e erros normalizados, e a interface apresenta mensagens de falha em vez de JSON bruto.

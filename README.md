@@ -30,6 +30,15 @@ Relatório entregue pelo grupo: [Sistemas_Distribuidos_Relatorio.pdf](docs/Siste
 
 Os serviços em `src/services` validam os JSONs externos com Zod e convertem os dados para modelos em `src/types`. Os componentes exibem esses modelos, não os JSONs brutos. O fluxo de busca cancela requisições anteriores; clima, país e câmbio podem falhar separadamente. A cotação é informativa e pode não representar o valor de uma operação de câmbio. O Gemini recebe o contexto do destino e as preferências enviadas pelo usuário; as sugestões geradas exigem conferência.
 
+## Organização do código
+
+- `src/components` e `src/pages`: interface e experiência de navegação.
+- `src/hooks`: coordenação da busca e dos estados independentes dos cartões.
+- `src/services`: chamadas HTTP, validação das APIs públicas e conversão para os modelos internos; comentários registram regras de normalização e casos especiais.
+- `src/types` e `src/utils`: contratos validados e funções auxiliares.
+- `api/gemini.ts` e `server/gemini.ts`: entrada da função Vercel, validação da solicitação, chamada segura ao Gemini, fallback e validação da resposta estruturada.
+- `docs`: relatório PDF e fonte LaTeX, arquitetura e roteiro de apresentação.
+
 ## Demonstração
 
 1. Abra [travelai-furg.vercel.app](https://travelai-furg.vercel.app) em uma janela anônima e pesquise `Tokyo`.

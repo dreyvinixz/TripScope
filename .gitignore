@@ -5,6 +5,8 @@ playwright-report/
 test-results/
 .vercel/
 /tmp/pdfs/
+/tmp/release/
+/tmp/release-staging/
 /docs/report/source/tmp/
 
 .env
