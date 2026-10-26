@@ -2,11 +2,11 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
 
 const cards = [
-  { city: 'Tokyo', region: 'Ásia / JP', image: '/images/tokyo.png' },
-  { city: 'London', region: 'Europa / GB', image: '/images/london.png' },
-  { city: 'Rio Grande', region: 'América do Sul / BR', image: '/images/rio-grande.png' },
-  { city: 'Paris', region: 'Europa / FR', image: '/images/paris.png' },
-  { city: 'New York', region: 'América do Norte / US', image: '/images/new-york.png' },
+  { city: 'Tokyo', region: 'Ásia / JP', image: '/images/tokyo.webp' },
+  { city: 'London', region: 'Europa / GB', image: '/images/london.webp' },
+  { city: 'Rio Grande', region: 'América do Sul / BR', image: '/images/rio-grande.webp' },
+  { city: 'Paris', region: 'Europa / FR', image: '/images/paris.webp' },
+  { city: 'New York', region: 'América do Norte / US', image: '/images/new-york.webp' },
 ]
 
 export function TravelGallery({ onSelectCity }: { onSelectCity: (city: string) => void }) {

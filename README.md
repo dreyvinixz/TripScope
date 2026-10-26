@@ -6,6 +6,8 @@ Cliente web para explorar destinos e reunir localização, clima, dados do país
 
 **Acesso público:** [https://travelai-furg.vercel.app](https://travelai-furg.vercel.app). Publicado na Vercel em 25/10/2026. Em 25/10/2026, a função Gemini respondeu HTTP 200 tanto para uma pergunta contextual quanto para a geração de roteiro; a resposta foi validada e tratada no servidor. Quando o modelo principal respondeu HTTP 503, o fallback `gemini-3.5-flash-lite` concluiu a solicitação.
 
+**Código-fonte no GitHub:** [github.com/dreyvinixz/TripScope](https://github.com/dreyvinixz/TripScope).
+
 Relatório entregue pelo grupo: [Sistemas_Distribuidos_Relatorio.pdf](docs/Sistemas_Distribuidos_Relatorio.pdf). As correções identificadas para o PDF estão em [docs/report/README.md](docs/report/README.md).
 
 ## Funcionalidades

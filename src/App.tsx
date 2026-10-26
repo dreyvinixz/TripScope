@@ -60,7 +60,7 @@ async function copyText(value: string): Promise<void> {
 
 function BrandLogo({ compact = false }: { compact?: boolean }) {
   return <span className={`brand-logo ${compact ? 'is-compact' : ''}`}>
-    <img src="/images/logo.png" alt="TravelAI" onError={event => { event.currentTarget.hidden = true }} />
+    <img src="/images/logo.webp" alt="TravelAI" onError={event => { event.currentTarget.hidden = true }} />
     <span className="brand-logo-fallback" aria-hidden="true">Travel<span>AI</span></span>
   </span>
 }

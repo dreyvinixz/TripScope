@@ -130,6 +130,7 @@ export function LandingExperience({ destination, initialValue, onSearch, onSelec
       <span>Explore outro lugar</span><SearchBar key={initialValue} onSearch={onSearch} initialValue={initialValue} />
     </section> : <section ref={rootRef} className="hero-stage no-print">
       <video className="hero-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
+        <source src="/assets/15838744-uhd_3840_1620_24fps.webm" type="video/webm" />
         <source src="/assets/13241659_3240_2160_24fps.mp4" type="video/mp4" />
       </video>
       <button className="hero-video-toggle" type="button" hidden={!videoNeedsPlay}>
